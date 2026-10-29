@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>Good Room Flyers by Bráulio Amado</title>
+<meta name="description" content="An unofficial homage to the flyers Bráulio Amado designed for Good Room, Brooklyn.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+/* Layout: sticky header with category filter chips and backup controls; year sections of flyer tiles; a bottom action bar while flyers are selected */
+:root {
+  --bg: #f3f3f6; --surface: #ffffff; --fg: #17161d; --muted: #63606f; --line: #dcdae3;
+  --accent: #4b2a8a; --accent-soft: #ebe5f6; --on-accent: #ffffff; --verso: #8a5a12; --verso-soft: #f6ecd9;
+  --warn: #8a5a12; --warn-soft: #f6ecd9; --shade: rgba(14, 12, 20, 0.9); --danger: #b3261e;
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #121117; --surface: #1b1a22; --fg: #ecebf2; --muted: #a09cad; --line: #2e2c38;
+  --accent: #b9a2ec; --accent-soft: #2a2340; --on-accent: #17121f; --verso: #e2b56a; --verso-soft: #33291a;
+  --warn: #e2b56a; --warn-soft: #33291a; --shade: rgba(6, 5, 10, 0.94); --danger: #f2827a; color-scheme: dark } }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--fg); font: 14px/1.45 var(--body); }
+button, input, select { font: inherit; color: inherit; }
+.gutter { max-width: 1400px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); }
+.bar .gutter { padding-block: 12px 10px; display: grid; gap: 10px; }
+.row1 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+h1 { font: 700 22px/1.1 var(--display); margin: 0; letter-spacing: -0.01em; }
+h1 .by { font-weight: 500; color: var(--muted); }
+.credit { margin: 18px 0 0; max-width: 72ch; font-size: 15px; line-height: 1.55; }
+.credit a, .foot a { color: var(--accent); }
+.foot { margin: 48px 0 0; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; max-width: 80ch; }
+.count { color: var(--muted); font-variant-numeric: tabular-nums; }
+.row1 .right { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.size { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+.saved { font-size: 13px; color: var(--muted); }
+.saved.warn { color: var(--warn); font-weight: 500; }
+.cats { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 6px 4px 10px; cursor: pointer; font-variant-numeric: tabular-nums; }
+.chip .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.chip .n { color: var(--muted); font-size: 12px; }
+.chip[aria-pressed="true"] { border-color: var(--fg); background: var(--accent-soft); font-weight: 500; }
+.chip .edit { border: 0; background: transparent; padding: 0 4px; border-radius: 50%; cursor: pointer; color: var(--muted); line-height: 1; font-size: 16px; }
+.chip .edit:hover { color: var(--fg); }
+.chip.plain { padding-right: 10px; }
+.newcat { display: inline-flex; gap: 4px; }
+.newcat input { width: 11rem; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 10px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+.seg button { border: 0; background: var(--surface); padding: 3px 9px; cursor: pointer; font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.link { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 2px 4px; text-decoration: underline; text-underline-offset: 2px; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 7px; padding: 6px 12px; cursor: pointer; white-space: nowrap; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 500; }
+.btn.danger { color: var(--danger); border-color: var(--danger); }
+:is(.btn, .chip, .link, .seg button, .tile, .zoom, select, input):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+main.gutter { padding-block: 8px 140px; }
+.confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 8px 12px; border-radius: 8px; background: var(--warn-soft); color: var(--warn); }
+.confirm.ok { background: var(--accent-soft); color: var(--accent); }
+.notice { margin: 14px 0 0; padding: 10px 14px; border-radius: 10px; background: var(--warn-soft); color: var(--warn); max-width: 90ch; }
+.help { color: var(--muted); font-size: 13px; margin: 12px 0 0; max-width: 95ch; }
+.help kbd { font: 12px var(--mono); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; background: var(--surface); }
+.year { margin-top: 26px; }
+.yhead { display: flex; align-items: baseline; gap: 12px; border-bottom: 2px solid var(--fg); padding-bottom: 6px; margin-bottom: 12px; }
+.yhead h2 { font: 700 30px/1 var(--display); margin: 0; font-variant-numeric: tabular-nums; }
+.yhead p { margin: 0; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--tile, 160px), 1fr)); gap: 12px; }
+.tile { position: relative; display: grid; gap: 6px; padding: 6px; border: 2px solid transparent; border-radius: 10px; background: var(--surface); cursor: pointer; min-width: 0; }
+.tile:hover { border-color: var(--line); }
+.frame { aspect-ratio: 2 / 3; background: var(--bg); border-radius: 6px; overflow: hidden; display: grid; place-items: center; max-width: 100%; }
+.frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.frame .ph { color: var(--muted); font-size: 12px; text-align: center; padding: 8px; }
+.cap { display: flex; align-items: center; gap: 6px; font-size: 13px; font-variant-numeric: tabular-nums; min-width: 0; }
+.cap time { font-weight: 500; white-space: nowrap; }
+.side { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; padding: 1px 5px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); }
+.side.v { background: var(--verso-soft); color: var(--verso); }
+.zoom { margin-left: auto; flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 6px; width: 26px; height: 26px; display: grid; place-items: center; cursor: zoom-in; padding: 0; }
+.zoom svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
+.dots { display: flex; flex-wrap: wrap; gap: 3px; min-height: 8px; }
+.dots i { width: 8px; height: 8px; border-radius: 50%; display: block; }
+.mark { position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; border-radius: 50%; background: var(--surface); border: 2px solid var(--line); display: grid; place-items: center; }
+.mark svg { width: 13px; height: 13px; fill: none; stroke: var(--on-accent); stroke-width: 3; opacity: 0; }
+.tile.on { border-color: var(--accent); background: var(--accent-soft); }
+.tile.on .mark { background: var(--accent); border-color: var(--accent); }
+.tile.on .mark svg { opacity: 1; }
+.empty { color: var(--muted); padding: 48px 0; text-align: center; }
+.actionbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -6px 24px rgba(0,0,0,.08); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.actionbar .gutter { padding-block: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.actionbar b { font: 700 18px var(--display); font-variant-numeric: tabular-nums; }
+.actionbar select { border: 1px solid var(--line); background: var(--surface); border-radius: 7px; padding: 6px 8px; max-width: 14rem; }
+.actionbar .grp { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.actionbar .end { margin-left: auto; display: inline-flex; gap: 6px; }
+.toast { min-height: 1.3em; font-size: 13px; color: var(--muted); }
+.lb { position: fixed; inset: 0; z-index: 50; background: var(--shade); display: grid; grid-template-rows: 1fr auto; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.lb-stage { position: relative; display: grid; place-items: center; min-height: 0; padding: 16px 64px 0; }
+.lb-stage img { max-width: 100%; max-height: calc(100vh - 170px); object-fit: contain; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+.lb-stage .ph { color: #d9d6e3; }
+.lb-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 64px; border: 0; border-radius: 8px; background: rgba(255,255,255,.12); color: #fff; font-size: 26px; cursor: pointer; }
+.lb-nav:hover { background: rgba(255,255,255,.22); }
+.lb-prev { left: max(10px, env(safe-area-inset-left, 0px)); } .lb-next { right: max(10px, env(safe-area-inset-right, 0px)); }
+.lb-close { position: absolute; top: 10px; right: max(10px, env(safe-area-inset-right, 0px)); border: 0; border-radius: 8px; background: rgba(255,255,255,.14); color: #fff; padding: 6px 12px; cursor: pointer; }
+.lb-bar { display: grid; gap: 8px; justify-items: center; padding: 10px 16px 14px; color: #f2f0f7; }
+.lb-bar .info { font-variant-numeric: tabular-nums; display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; align-items: baseline; }
+.lb-bar a { color: #cbbcf3; font-size: 13px; }
+.lb-cats { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.lb-cats button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #3a3646; background: #221f2b; color: #f2f0f7; border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+.lb-cats button .dot { width: 10px; height: 10px; border-radius: 50%; }
+.lb-cats button kbd { font: 11px var(--mono); color: #a7a2b5; }
+.lb-cats button[aria-pressed="true"] { background: #f2f0f7; color: #17121f; border-color: #f2f0f7; font-weight: 500; }
+.lb-cats button[aria-pressed="true"] kbd { color: #4b4656; }
+.lb-hint { font-size: 12px; color: #a7a2b5; }
+.panel { position: fixed; inset: 0; z-index: 60; background: var(--shade); display: grid; place-items: center; padding: 16px; }
+.panel .box { background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 12px; width: min(440px, 100%); padding: 18px; display: grid; gap: 12px; }
+.panel h3 { font: 700 20px var(--display); margin: 0; }
+.panel input[type=text] { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 7px 10px; }
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.swatches button { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.swatches button[aria-pressed="true"] { border-color: var(--fg); box-shadow: inset 0 0 0 2px var(--surface); }
+.panel .row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
+.panel .row .r { display: flex; gap: 8px; }
+.meter { font-size: 13px; color: var(--muted); }
+@media (max-width: 640px) {
+  .row1 .right { margin-left: 0; }
+  .lb-stage { padding: 52px 8px 0; } .lb-nav { width: 34px; height: 54px; }
+  .actionbar .end { margin-left: 0; }
+}
+@media (prefers-reduced-motion: no-preference) { .tile { transition: border-color .12s, background-color .12s; } }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="gutter">
+    <div class="row1">
+      <h1>Good Room flyers <span class="by">by Bráulio Amado</span></h1>
+      <span class="count" id="count"></span>
+      <div class="right">
+        <label class="size" for="tsize">Size <input id="tsize" type="range" min="100" max="320" step="10" value="160"></label>
+        <span class="saved" id="saved"></span>
+        <button class="btn" id="bkSave" type="button">Save backup</button>
+        <label class="btn" for="bkFile">Load backup</label>
+        <input id="bkFile" type="file" accept=".json,application/json" hidden>
+      </div>
+    </div>
+    <div class="confirm" id="bkConfirm" hidden>Loading this backup replaces your current categories, and they have changes you haven't backed up.
+      <button class="btn danger" id="bkReplace" type="button">Replace them</button>
+      <button class="btn" id="bkCancel" type="button">Keep current</button></div>
+    <div class="confirm ok" id="bkMsg" role="status" hidden></div>
+    <div class="cats" id="cats" aria-label="Categories"></div>
+  </div>
+</header>
+
+<main class="gutter">
+  <p class="credit">Every flyer here was designed by <a href="https://badbadbadbad.com/" target="_blank" rel="noopener">Bráulio Amado</a> for <a href="https://ra.co/clubs/97606" target="_blank" rel="noopener">Good Room</a>, the Brooklyn club, between 2015 and 2026. This page is an unofficial homage by an admirer of his work: it is not affiliated with him or the club, and the artwork remains his. The images are shown directly from Resident Advisor, where they were first published, and each one links to its event.</p>
+  <p class="notice" id="remoteNote" hidden>Showing the images from RA's site, because this file isn't in your "Good Room flyers" folder. Move it into that folder to use your downloaded copies, offline and at full quality.</p>
+  <p class="notice" id="storeNote" hidden>This browser won't keep your categories when you close the page. Use <b>Save backup</b> before closing, and <b>Load backup</b> next time.</p>
+  <p class="help">Click flyers to select them, then add them to a category from the bar at the bottom. <kbd>Shift</kbd>-click selects a run. Click a category to show only its flyers; click several to combine them. In the full-size view, number keys <kbd>1</kbd>&ndash;<kbd>9</kbd> put the flyer in or out of a category, <kbd>&larr;</kbd> <kbd>&rarr;</kbd> move, <kbd>Esc</kbd> closes. Your categories are saved in this browser on this device; nothing is uploaded. To move them to another device, use Save backup there and Load backup here.</p>
+  <div id="years"></div>
+  <p class="empty" id="empty" hidden>No flyers match these categories.</p>
+  <p class="foot">Design: <a href="https://badbadbadbad.com/" target="_blank" rel="noopener">Bráulio Amado</a>. All artwork &copy; Bráulio Amado and Good Room, shown here for appreciation only. If you are Bráulio Amado or Good Room and would like anything changed or removed, please <a href="https://github.com/Orn3tte/good-room-flyers/issues" target="_blank" rel="noopener">open an issue</a> and it will be done.</p>
+</main>
+
+<div class="actionbar" id="actionbar" hidden>
+  <div class="gutter">
+    <b id="nsel">0</b><span>selected</span>
+    <span class="grp" id="editGrp">
+      <select id="addTo" aria-label="Category to add to"></select>
+      <button class="btn primary" id="addBtn" type="button">Add</button>
+      <select id="rmFrom" aria-label="Category to remove from"></select>
+      <button class="btn" id="rmBtn" type="button">Remove</button>
+    </span>
+    <span class="end">
+      <button class="btn" id="selShown" type="button">Select all shown</button>
+      <button class="btn" id="selClear" type="button">Clear selection</button>
+    </span>
+    <span class="toast" id="toast" role="status"></span>
+  </div>
+</div>
+
+<div class="lb" id="lb" hidden>
+  <div class="lb-stage" id="lbStage">
+    <button class="lb-nav lb-prev" id="lbPrev" type="button" aria-label="Previous flyer">&#8249;</button>
+    <img id="lbImg" alt="" referrerpolicy="no-referrer">
+    <span class="ph" id="lbPh" hidden>Image unavailable</span>
+    <button class="lb-nav lb-next" id="lbNext" type="button" aria-label="Next flyer">&#8250;</button>
+    <button class="lb-close" id="lbClose" type="button">Close</button>
+  </div>
+  <div class="lb-bar">
+    <div class="info"><span id="lbInfo"></span><a id="lbRa" href="#" target="_blank" rel="noopener noreferrer">RA event page</a></div>
+    <div class="lb-cats" id="lbCats"></div>
+    <div class="lb-hint" id="lbHint"></div>
+  </div>
+</div>
+
+<div class="panel" id="panel" hidden>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+    <h3 id="pTitle">Edit category</h3>
+    <label for="pName" class="meter">Name</label>
+    <input id="pName" type="text" maxlength="40">
+    <div class="swatches" id="pSw"></div>
+    <div class="row">
+      <button class="btn danger" id="pDel" type="button">Delete category</button>
+      <span class="r"><button class="btn" id="pCancel" type="button">Cancel</button><button class="btn primary" id="pSave" type="button">Save</button></span>
+    </div>
+    <p class="meter" id="pNote"></p>
+  </div>
+</div>
+
+<script>
+var CATALOG = [["2015-03-13_690402_recto","2015-03-13",690402,"R","3f526b5dbc5fb12ce2c39e7d2a16bd191e28cbfd.jpg"],["2015-12-12_772855_recto","2015-12-12",772855,"R","537d1c0aab00498e0bc7fce91d0e13cb4f332b7a.jpg"],["2015-12-26_775171_verso","2015-12-26",775171,"V","7da744ed1d1ca2962ae18eb10bb05c6ab7f5caa0.jpg"],["2016-01-02_787350_verso","2016-01-02",787350,"V","6fd37ae32f2bcd9e3a1a413dedee95edbe25dd10.jpg"],["2016-01-08_787952_verso","2016-01-08",787952,"V","a205658106110ffddf39b864e18d2533e3a07eb2.jpg"],["2016-01-17_793734_verso","2016-01-17",793734,"V","07ea0e0a1a84947d612c249e7e08440c7f69f215.jpg"],["2016-01-22_784873_verso","2016-01-22",784873,"V","f53748b15978ccb0008f692af6f1ed18d7960429.jpg"],["2016-03-12_801502_recto","2016-03-12",801502,"R","1e70b7c2a9e22092b4098a60c7e76c7396ce2b48.jpg"],["2016-03-19_791612_verso","2016-03-19",791612,"V","34cddf9bac721191034472ac6e993214de30ccc1.jpg"],["2016-03-24_797946_verso","2016-03-24",797946,"V","de4c8dcbdb8ac1f4b1625f0934da7cfe8ba6c9a2.jpg"],["2016-03-31_821620_verso","2016-03-31",821620,"V","9c82ad20f42a4d9b506467d13e96d0a494a425ed.jpg"],["2016-04-07_823432_verso","2016-04-07",823432,"V","9aa1a46a87b3dd94c3d2025b29afab6a35708a69.jpg"],["2016-04-15_825211_recto","2016-04-15",825211,"R","b180ce6b97fc75c806c31d823d1aaf1c042a3f7e.jpg"],["2016-04-15_825211_verso","2016-04-15",825211,"V","f35ba68a2303a8b1d2942a648b0eb0299376823b.jpg"],["2016-04-16_807682_verso","2016-04-16",807682,"V","7d4cc8473954d038d801f726826eb875fb1e25ba.jpg"],["2016-04-21_801498_verso","2016-04-21",801498,"V","8c3e143f13480a2324ac9d7edc1a0ce7186f588e.jpg"],["2016-04-23_808091_verso","2016-04-23",808091,"V","bd6b110e3cbcf4539d83a346cc9f1ed0f74b5fa7.jpg"],["2016-04-28_831256_verso","2016-04-28",831256,"V","343e052a978c9a010a4ff046f5a2b6c38be926c4.jpg"],["2016-05-05_825058_verso","2016-05-05",825058,"V","cf706a95aa8467348b0cd5f74ea2af6d876f3d2d.jpg"],["2016-05-27_836267_recto","2016-05-27",836267,"R","cf1a4b4d56f7ff6b973d52e78920266a911cac39.jpg"],["2016-06-02_813315_verso","2016-06-02",813315,"V","a619e178a1df29651004fcb64850de60c2a55aff.jpg"],["2016-06-04_838580_recto","2016-06-04",838580,"R","4a41fdabf3029650660fb5af00d833c1555c0de4.jpg"],["2016-06-25_848019_recto","2016-06-25",848019,"R","394039bf828caa8abf320be1016bc473b15ec432.jpg"],["2016-07-02_851078_recto","2016-07-02",851078,"R","5f5ed4e2b2eadfb521b82ba5256edb33dccf5d1d.jpg"],["2016-07-02_851078_verso","2016-07-02",851078,"V","0c895bfa646b3c19320916c10a1b01fdeb71e49f.jpg"],["2016-07-22_858499_recto","2016-07-22",858499,"R","8832558dd85c11c229a868cfc7f6967f0e2b6f96.jpg"],["2016-07-23_852824_recto","2016-07-23",852824,"R","038b231f506068f4de6834363a2e22acca6299d7.jpg"],["2016-07-28_853289_recto","2016-07-28",853289,"R","d4fb289106e83f428d98e11f7127f587b835cb53.jpg"],["2016-07-29_854626_recto","2016-07-29",854626,"R","57935ac2467dea5d7f15f15547cc391db36e1a3e.jpg"],["2016-08-04_861146_recto","2016-08-04",861146,"R","ac9cf6501dde214d1f9c7e4a6c9d099c18c8ad57.jpg"],["2016-08-05_861172_recto","2016-08-05",861172,"R","8f73b8243a2a69258049819f149905a521fd8fc8.jpg"],["2016-08-13_867273_recto","2016-08-13",867273,"R","80405862b123149fa6ae8a32b8a0bb5e6326fba4.jpg"],["2016-09-04_866022_recto","2016-09-04",866022,"R","687ce87dd4bf7bf62e0222741707b09a9ca7d28c.jpg"],["2016-09-15_867307_recto","2016-09-15",867307,"R","7be6b71d9d5d3d57ef467f9f585a7e93f131166d.jpg"],["2016-09-16_865560_recto","2016-09-16",865560,"R","34f5579469c81627c6e380a4bc3ded22f1783bb9.jpg"],["2016-09-17_858560_recto","2016-09-17",858560,"R","bf1492fec15cc6fde9cc1743f28697274037fb7c.jpg"],["2016-09-22_865609_recto","2016-09-22",865609,"R","139ed0beff13b2cec2f62ba145a31229cfbe1838.jpg"],["2016-09-23_876352_recto","2016-09-23",876352,"R","b525e9816e57e68f2b19f4a6e76219035b3711a0.jpg"],["2016-10-01_883689_recto","2016-10-01",883689,"R","e1013996d89acd07401d38328d513346f4e7a05c.jpg"],["2016-10-13_880517_recto","2016-10-13",880517,"R","0ae078c74caf1f3ee1c45a8399317cf8401c02a0.jpg"],["2016-10-14_879999_recto","2016-10-14",879999,"R","b5b44b7c0132e554c12a2c43c7248f180c37f760.jpg"],["2016-10-20_888853_recto","2016-10-20",888853,"R","2e9af4ac1d1ac4c9c0f2beaed5694c6ec14e15d3.jpg"],["2016-10-21_883615_recto","2016-10-21",883615,"R","bd8ce602534c90cd16f91d3407918d58691e696e.jpg"],["2016-10-27_873776_recto","2016-10-27",873776,"R","f48bb735bb44c7d680da694cfa215732f468db72.jpg"],["2016-11-11_886248_recto","2016-11-11",886248,"R","5e14958e346c4b16e170d5a4a2e26a59bd06b9ca.jpg"],["2016-12-08_895472_recto","2016-12-08",895472,"R","de06a33c548ffe9fca40aa95636ac41a2f313a91.jpg"],["2016-12-10_903265_recto","2016-12-10",903265,"R","f4b802f1af46aad3a4c2b4165dcbd07b3608694e.jpg"],["2016-12-16_903280_recto","2016-12-16",903280,"R","d08fb2c0352c777ac02530443eab91657d3ffb03.jpg"],["2016-12-22_910991_recto","2016-12-22",910991,"R","3119fa60f8084ddc82d1fbe21459ef6a32c25f1d.jpg"],["2016-12-23_910566_recto","2016-12-23",910566,"R","786621bdefae83596bb89a4e387214379ea47bad.jpg"],["2016-12-29_908046_recto","2016-12-29",908046,"R","9de1db5b73d541046f549c6be08145bf3b691ac4.jpg"],["2016-12-31_903325_recto","2016-12-31",903325,"R","dff6f014e6a8e5a33c72ed368b1b4887a0d798ae.jpg"],["2017-01-06_913336_recto","2017-01-06",913336,"R","513420c5923ec92dd005713a7335669fe52260eb.jpg"],["2017-01-07_914197_recto","2017-01-07",914197,"R","41b21b714f24394b7d19ae757611b7a2d3d1027f.jpg"],["2017-01-15_912858_recto","2017-01-15",912858,"R","ed8dcf5b6bf6e89a28a75131f0e3425a826d452f.jpg"],["2017-01-26_910999_recto","2017-01-26",910999,"R","0c68ef974a4bbe3f3aabd8608cc02b20a57c8ca9.jpg"],["2017-01-27_914174_recto","2017-01-27",914174,"R","e667ff70d16b47f5fc9efe6f7fe3decf3bb91708.jpg"],["2017-01-28_912891_recto","2017-01-28",912891,"R","201be3d84487ae2867b00d64348dd30dea5ace7c.jpg"],["2017-02-02_908089_recto","2017-02-02",908089,"R","4c1d97eed30733a46842d3ae8e50456043ef910d.jpg"],["2017-02-18_927300_recto","2017-02-18",927300,"R","ed9d4421aba4194356e671dba55ae4efeab68def.jpg"],["2017-02-23_927819_recto","2017-02-23",927819,"R","f89c763bbc7df147aab96e361732abb1bc8b0cc0.jpg"],["2017-03-09_933191_verso","2017-03-09",933191,"V","d8918c139ddcfacb5b5f12db68be28f4f9e42fb3.jpg"],["2017-03-17_938574_recto","2017-03-17",938574,"R","d0cfc3f5a4d46797636537af5a4d9a593ce482ee.jpg"],["2017-04-07_951385_recto","2017-04-07",951385,"R","dfd544b56fe78957ae3efe9b664b8f214c95e39f.jpg"],["2017-04-22_942945_recto","2017-04-22",942945,"R","292cabde31a5a06a181b1a9151c4a91eb4f6aebe.jpg"],["2017-04-27_945435_recto","2017-04-27",945435,"R","d64a5ebeb2eda6f63f9173cbf5109b92e888ecd4.jpg"],["2017-04-29_949601_recto","2017-04-29",949601,"R","0af2d913baca110e2518619fb798dfce3ab0d268.jpg"],["2017-06-01_971619_recto","2017-06-01",971619,"R","1088fd52e8fc1745d1796a333e2903cb792d92ec.jpg"],["2017-06-02_953213_recto","2017-06-02",953213,"R","4e5550e7cb68201522abe13d5c09191708c12a0f.jpg"],["2017-06-29_977150_recto","2017-06-29",977150,"R","b0a25dcee5ada68a828fe0c5e942b5afb59cf37a.jpg"],["2017-07-07_981328_recto","2017-07-07",981328,"R","1d7060217766e444f08a48b25052c7ab099cc21c.jpg"],["2017-07-12_969710_recto","2017-07-12",969710,"R","c4ea04f0ffd1e679c0cd09adf92209082f88c090.jpg"],["2017-07-21_989523_recto","2017-07-21",989523,"R","4e1e351983b9f6a7af9db412757d19e0ce6ec1cf.jpg"],["2017-08-03_990495_recto","2017-08-03",990495,"R","4248b9b5e5027e5b981fdef91d6ae5de4d4772be.jpg"],["2017-08-04_993004_recto","2017-08-04",993004,"R","ad176772b5aa043799eecc69188884ca6869425e.jpg"],["2017-08-12_995367_recto","2017-08-12",995367,"R","9280973ae1e37b6c723bf9651657d1b7aae49978.jpg"],["2017-08-17_990960_recto","2017-08-17",990960,"R","16063c4b7c98393dc30952c42aff767269840259.jpg"],["2017-09-02_991021_recto","2017-09-02",991021,"R","08cf52a068d33332dae95a1756d42756c09dc7f6.jpg"],["2017-09-14_1003214_recto","2017-09-14",1003214,"R","ffbd2782ab0d9104326e69ffc388c801aafc9b60.jpg"],["2017-09-21_996919_recto","2017-09-21",996919,"R","6ee20ec47f3958f9cc080853f1de9bbcfb9ac446.jpg"],["2017-09-22_993533_recto","2017-09-22",993533,"R","7b2079b605837549c86dff7f95fed5e731657fb3.jpg"],["2017-10-06_1012767_recto","2017-10-06",1012767,"R","14a9cf50f31f341c927178c5b9b0c613faa77d74.jpg"],["2017-11-10_1018311_recto","2017-11-10",1018311,"R","73030a157e7a32c76882cd7202a4b3d9f2c25d6b.jpg"],["2017-11-15_1031848_recto","2017-11-15",1031848,"R","f3658c96e26b623dbacc3365993cf03d5326f2db.jpg"],["2017-11-24_1034913_recto","2017-11-24",1034913,"R","366b2989396657e85cd827da94c7a1528e819e8a.jpg"],["2017-12-02_1035873_recto","2017-12-02",1035873,"R","44f39fbffa630e9cfbc8a4e1dc78c07aeaf9fb7d.jpg"],["2017-12-07_1024132_recto","2017-12-07",1024132,"R","c5b8d222a8c52cd9cfc83afd64b649c76af2ca49.jpg"],["2017-12-14_1024168_recto","2017-12-14",1024168,"R","4d6b696c81cdf8ce1a799474eb5c285ba6643c18.jpg"],["2017-12-16_1027609_recto","2017-12-16",1027609,"R","88637f2ccaf47792e09d18d62b988a736926d79a.jpg"],["2017-12-23_1028875_recto","2017-12-23",1028875,"R","5bc260625db3e4b77b7190f0a0e39efe7bad0907.jpg"],["2017-12-28_1043043_recto","2017-12-28",1043043,"R","24c03d233aab4c53e583a92c44858e6b43a8380e.jpg"],["2017-12-29_1046598_recto","2017-12-29",1046598,"R","8099e00e4e407b0c69a9fff5a1150cddc1ab2d27.jpg"],["2018-01-05_1043114_recto","2018-01-05",1043114,"R","f12fe0aed11d7269f4e526de923bcc8a3fdf3308.jpg"],["2018-01-06_1047539_recto","2018-01-06",1047539,"R","b37022b416640ecabead8fe27a31362603464021.jpg"],["2018-01-19_1051523_recto","2018-01-19",1051523,"R","2880480ad0fa25716fcd511eb02ec4e2786d32af.jpg"],["2018-01-20_1055067_recto","2018-01-20",1055067,"R","8780f32d55f186770d688e6c49384bd640b3bfd9.jpg"],["2018-02-15_1063833_recto","2018-02-15",1063833,"R","b5d9731a0922df7c62abe40c391396d0bc000ce1.jpg"],["2018-02-16_1057461_recto","2018-02-16",1057461,"R","988d07e8f1e60fcbab46af8ca4fc48533387f644.jpg"],["2018-02-24_1061192_recto","2018-02-24",1061192,"R","f59a1b28067753f90e94db3892ed1909a4a3826b.jpg"],["2018-03-03_1067222_recto","2018-03-03",1067222,"R","1853075d2d46d48b4edab71db423bcd72bec6e4d.jpg"],["2018-03-16_1078783_verso","2018-03-16",1078783,"V","e509d2bbeae1106663360fd55890f567a16d8ebb.jpg"],["2018-03-31_1075778_recto","2018-03-31",1075778,"R","8add82dfad508009d7496665af391d258e0b5d22.jpg"],["2018-04-07_1081798_recto","2018-04-07",1081798,"R","7845768025ba6253d60071f52387bda46a9ed623.jpg"],["2018-04-27_1087643_recto","2018-04-27",1087643,"R","4642e3af9db866cf73a567103d4964027abc43cf.jpg"],["2018-05-17_1094092_recto","2018-05-17",1094092,"R","4efc1dd597678b71b02de533724ab177505c1bc7.jpg"],["2018-05-18_1093254_recto","2018-05-18",1093254,"R","6583d897fbfe51834fb2c4571312991cfaa489d0.jpg"],["2018-05-24_1103138_recto","2018-05-24",1103138,"R","43c5b6177c062f1042365e6aad9aa30dddd673cf.jpg"],["2018-05-26_1109880_recto","2018-05-26",1109880,"R","5e185df5a4f99f9da2d043ca1e9e23cc10c9c1c4.jpg"],["2018-05-30_1109895_recto","2018-05-30",1109895,"R","c762bb3b20af9dea2d6195298dd66ec0927428df.jpg"],["2018-06-02_1098445_recto","2018-06-02",1098445,"R","d50c91c66d6441ee4cc59dc79948089c709777a3.jpg"],["2018-06-06_1120235_recto","2018-06-06",1120235,"R","949352f2826fcf075132658fb9ff55d8639285d0.jpg"],["2018-06-08_1108004_recto","2018-06-08",1108004,"R","132955e03f6c3c188b9ec28df44dce79b7ba238b.jpg"],["2018-06-12_1118189_recto","2018-06-12",1118189,"R","34d24c217d949821f4064589da2be62fc4ccbdb7.jpg"],["2018-06-14_1109400_recto","2018-06-14",1109400,"R","6ce710ea7b60a805b7add1528af015610b25bc2a.jpg"],["2018-06-15_1121473_recto","2018-06-15",1121473,"R","f643c49ac3ced819e90d4d4fc2bbb4949d677e68.jpg"],["2018-06-17_1120265_recto","2018-06-17",1120265,"R","6d158794aae39b28803993dfb5e784e37908303d.jpg"],["2018-06-21_1120276_recto","2018-06-21",1120276,"R","f337b6fa38943017e36adb5dc586852449516320.jpg"],["2018-06-28_1100692_recto","2018-06-28",1100692,"R","72891ec40f25d93dcf8a4e3610577253e1614178.jpg"],["2018-06-29_1112163_recto","2018-06-29",1112163,"R","803015be33abcd3c836b0d07ba4a437cf478da15.jpg"],["2018-06-30_1121526_recto","2018-06-30",1121526,"R","3957cf890fe37a8d131203be7bb0da25f69577ae.jpg"],["2018-07-03_1123550_recto","2018-07-03",1123550,"R","634d3a79485598e5090f2f95a28da4d38518e823.jpg"],["2018-07-05_1131356_recto","2018-07-05",1131356,"R","06cc83b64b70be7ee978fc4f0ebcf21b2a3f921d.jpg"],["2018-07-11_1134622_recto","2018-07-11",1134622,"R","01edd06e34be05898a6720776b75081dc1b24624.jpg"],["2018-07-19_1134420_recto","2018-07-19",1134420,"R","c178fd8208e5b6d18ea240250e418978b33764f4.jpg"],["2018-07-21_1116424_recto","2018-07-21",1116424,"R","5274f924b498a61c9cdcb3802d3924e479c5cb29.jpg"],["2018-07-26_1131817_recto","2018-07-26",1131817,"R","cb77932ffd91018a850fef23fe1c6079de91c3c0.jpg"],["2018-07-27_1134454_recto","2018-07-27",1134454,"R","42b3a20f82a27658b23767063eec65eaeb5cb4e6.jpg"],["2018-08-02_1134498_recto","2018-08-02",1134498,"R","db8382762306d6f2fb1f1ae6fd3a1aa4626245ee.jpg"],["2018-08-09_1136857_recto","2018-08-09",1136857,"R","ef6f2a5b7fb3386347e99b3e0dc71b347d72056c.jpg"],["2018-08-10_1135061_recto","2018-08-10",1135061,"R","cd798254a235fe9d8fd213b50fb940a8a1fa1f1a.jpg"],["2018-08-17_1143394_recto","2018-08-17",1143394,"R","0570d6f94f879184c84f31579d0c115c837e4c71.jpg"],["2018-08-22_1140668_recto","2018-08-22",1140668,"R","ae612d4b73e763a56335ef397762dcf7dd5a1faf.jpg"],["2018-08-23_1145003_recto","2018-08-23",1145003,"R","ff9a47d70c8cbf6326d3fd6a22e3f4a8c3b61b64.jpg"],["2018-08-24_1137698_recto","2018-08-24",1137698,"R","aa56767f18e35e1f98d56ae676139f59086bf956.jpg"],["2018-08-25_1124097_recto","2018-08-25",1124097,"R","50887cdcbcc184f37e48a48602f9b1c53ead3a1e.jpg"],["2018-08-30_1145641_recto","2018-08-30",1145641,"R","39b03da40bc4ae5fa07a8f2967c7953ed7d22e66.jpg"],["2018-09-01_1147520_recto","2018-09-01",1147520,"R","0f6345d7eb2e71162434a677f1f9aaef5ee5626c.jpg"],["2018-09-14_1152012_recto","2018-09-14",1152012,"R","411a948889b4c97f17876b53827ec988d819fd5e.jpg"],["2018-09-22_1156634_recto","2018-09-22",1156634,"R","5bb551fc89d56f5d2bfc1f4f185fee96132d2566.jpg"],["2018-09-26_1153822_recto","2018-09-26",1153822,"R","1cde86e0f924bc3a438b32be703338ab29b90bec.jpg"],["2018-09-29_1146571_recto","2018-09-29",1146571,"R","4d954d7054907dddb5bcee26e13ccf574d48c564.jpg"],["2018-09-30_1165635_recto","2018-09-30",1165635,"R","66c1cec7be85317a98d3afe3cbfe4c911e6f6b26.jpg"],["2018-10-11_1159559_recto","2018-10-11",1159559,"R","51b86b2eafa5bd09e1f4a2c8663cfbe82ae5d731.jpg"],["2018-10-12_1168645_recto","2018-10-12",1168645,"R","5f6310d2bd1387cddef24d9ab6a2b8dab03697fa.jpg"],["2018-10-19_1165742_recto","2018-10-19",1165742,"R","d5910cf6e80e118ac6ae352d65739ef04a8047bf.jpg"],["2018-10-25_1167985_verso","2018-10-25",1167985,"V","7e46a249b5456a4e88721df4c9cc396ac3d1c4a8.jpg"],["2018-10-27_1169900_recto","2018-10-27",1169900,"R","7ad8e9f15f7021a69f93558d45acf5bfb37c6671.jpg"],["2018-11-02_1174590_recto","2018-11-02",1174590,"R","b53d4fe33d83a71984c3c312577e11c46e70b4b6.jpg"],["2018-11-07_1171717_recto","2018-11-07",1171717,"R","19c68b24b517253195320bcfd7125f1963641b99.jpg"],["2018-11-09_1123494_recto","2018-11-09",1123494,"R","e15a89f79e8afcd4540324563f309537989a1137.jpg"],["2018-11-15_1174542_recto","2018-11-15",1174542,"R","fd6eccc2aa0a0bd04028e74d2c9c38920ac2fc86.jpg"],["2018-11-16_1169247_recto","2018-11-16",1169247,"R","d1d7ed816ef3474d561d6f00bde80899a622777f.jpg"],["2018-11-20_1159499_recto","2018-11-20",1159499,"R","c03798100d1b8bb87c794f6a0a8f627062161893.jpg"],["2018-11-29_1151949_recto","2018-11-29",1151949,"R","de4aa6c3d69a9af18985891574a517203e0975ef.jpg"],["2018-12-01_1175109_recto","2018-12-01",1175109,"R","17892d704a2bbbd5293e9f00a8a9b4d02865806e.jpg"],["2018-12-06_1174653_recto","2018-12-06",1174653,"R","a5a29188dba3634116f2ec340160f5436d53c5bf.jpg"],["2018-12-20_1182038_recto","2018-12-20",1182038,"R","27a3e23c1caef6639c076b5f95e2bcdc6e5d1524.jpg"],["2018-12-22_1189281_recto","2018-12-22",1189281,"R","723be9dd3fde25dddc03bd4e1348a850d4368ebc.jpg"],["2018-12-27_1184089_recto","2018-12-27",1184089,"R","51857edd8610a00c665b7a8cdfe8ea79f7e46854.jpg"],["2018-12-28_1188638_recto","2018-12-28",1188638,"R","8f7608921783be77c88ef7fefebacfb8fc67d1ff.jpg"],["2018-12-29_1184087_recto","2018-12-29",1184087,"R","a08a022e076b2ffa96e8f3b91d52b8cc4f18655c.jpg"],["2019-01-04_1197963_recto","2019-01-04",1197963,"R","be64bfd7c7eee74dacdaebe0c7b4bd8e2d5ad3b0.jpg"],["2019-01-11_1200902_recto","2019-01-11",1200902,"R","bae1081bbfb3bba6743ad236058092c7bdae809d.jpg"],["2019-01-13_1214022_recto","2019-01-13",1214022,"R","60809cf050c3f08c55d8da2808aa419a4eb2d951.jpg"],["2019-01-18_1196532_recto","2019-01-18",1196532,"R","8998f1f3c9093b9b78a673a4d2d66cd9cf1da084.jpg"],["2019-01-20_1197997_recto","2019-01-20",1197997,"R","69756fff91e23c0f5cfb056d0885f2f99e60cd2b.jpg"],["2019-02-01_1211004_recto","2019-02-01",1211004,"R","83cff92aefc7e2b5a5644b1d07b5fceff3b30d2b.jpg"],["2019-03-14_1223349_recto","2019-03-14",1223349,"R","0c15141363a17dc03d35a508b894e1dfac823362.jpg"],["2019-03-16_1220029_recto","2019-03-16",1220029,"R","1a7aa3d18eac8dc587a63e685fe18f44c86d29a2.jpg"],["2019-03-22_1230968_recto","2019-03-22",1230968,"R","cfc3aa2a3f947918df1dbf69422f08ad530b14a2.jpg"],["2019-03-28_1224001_recto","2019-03-28",1224001,"R","e299c1c6fcfb80c3a9d66d92bad4cf684bb79dc7.jpg"],["2019-03-30_1230211_recto","2019-03-30",1230211,"R","239e3f667c5e5c706448d022786a1ea61050f7c5.jpg"],["2019-04-04_1237931_recto","2019-04-04",1237931,"R","d3e6ffc027885147abc24adfca4592d9370b1114.jpg"],["2019-04-06_1233617_recto","2019-04-06",1233617,"R","2f77b17201d979d723ed7ee57a159ffdca7999f7.jpg"],["2019-04-10_1241232_recto","2019-04-10",1241232,"R","02fc746d14566fd28aa8c49ab42fb7538a998f79.jpg"],["2019-04-11_1227343_recto","2019-04-11",1227343,"R","da2e9d64657e23b3e097e17c65bdbeb29c62af32.jpg"],["2019-04-25_1250036_recto","2019-04-25",1250036,"R","d94b8639659cfc423546bfb2e06c9ce3180ef3f0.jpg"],["2019-04-26_1231101_recto","2019-04-26",1231101,"R","7d93c2c85d098304c7a041e56467e508b4b8acb1.jpg"],["2019-04-27_1236701_recto","2019-04-27",1236701,"R","7393e09d9c9726b64e3d92613607379aa6e2a21c.jpg"],["2019-05-04_1246659_recto","2019-05-04",1246659,"R","ef7bf4ad802dfc312359a33a41a0f7d700c1c821.jpg"],["2019-05-08_1257440_recto","2019-05-08",1257440,"R","e47d8cd3164c124471d39c40cbfe6c6e5c01f254.jpg"],["2019-05-09_1246805_recto","2019-05-09",1246805,"R","a2466b87eee72c9ec9490cadcc8c6227fbd32f8b.jpg"],["2019-05-25_1262425_recto","2019-05-25",1262425,"R","948b81925c59c2cfe2b69c5743c7376fe78408fe.jpg"],["2019-05-30_1266184_recto","2019-05-30",1266184,"R","ba955c93d4bd9aa1aa941ea70f474849e07e7bd4.jpg"],["2019-06-01_1256079_recto","2019-06-01",1256079,"R","7d58c922f81c4ee5d8344f22939f4e1fcb4e36b8.jpg"],["2019-06-06_1267617_recto","2019-06-06",1267617,"R","228a8fdccfffe07c35d4b416e5a9bebfa749c934.jpg"],["2019-06-14_1269565_recto","2019-06-14",1269565,"R","c779a82c2819f09281f94bab89047d1b225888f1.jpg"],["2019-06-19_1263391_recto","2019-06-19",1263391,"R","471b1af7ec368fa418df8b42d152283c07640ac8.jpg"],["2019-06-20_1275488_recto","2019-06-20",1275488,"R","5c287d3a0b2d2df81f36fc097b91b6e2627ba5a7.jpg"],["2019-06-22_1260431_recto","2019-06-22",1260431,"R","b44def8e3b754e17bebba9d1a9e1a71926be201e.jpg"],["2019-06-26_1275532_recto","2019-06-26",1275532,"R","a06ea1ceb023b7f2b65b375b1535a75033151313.jpg"],["2019-06-27_1269585_recto","2019-06-27",1269585,"R","24552b31f94976fb6432ebc32a0d2e827f5c7405.jpg"],["2019-06-29_1248029_recto","2019-06-29",1248029,"R","2d18b54ec5b394af36e4585db82959a455be4de2.jpg"],["2019-07-03_1254417_recto","2019-07-03",1254417,"R","971d17a0529e99ddb79290bba51543687e33f2e5.jpg"],["2019-07-05_1268587_recto","2019-07-05",1268587,"R","6385d4d8e212c008c701f48c9305f5f7137c5719.jpg"],["2019-07-06_1281755_recto","2019-07-06",1281755,"R","06b32c0b62ebd34b3b910672cac3b5d56c1c53a2.jpg"],["2019-07-18_1290143_recto","2019-07-18",1290143,"R","5a0dfe81bc881b78ab0ad25541606de7f30f3e26.jpg"],["2019-07-24_1277795_recto","2019-07-24",1277795,"R","c1b79a7f1a6ae956e058d9ed8e0b61e9cd0ca405.jpg"],["2019-07-25_1275512_recto","2019-07-25",1275512,"R","62735af7c9e46bbe1d729a176f305c81c89014de.jpg"],["2019-07-27_1291387_recto","2019-07-27",1291387,"R","ca81eb9d79ba1192aa95eb0fe6b305c634702943.jpg"],["2019-08-01_1295444_recto","2019-08-01",1295444,"R","ec8122a4495195a9b60fc687cc12c009e4a6a8c3.jpg"],["2019-08-03_1283692_recto","2019-08-03",1283692,"R","bba777843beb654e2b3a0208dbc5de67d5c6bd2b.jpg"],["2019-08-08_1278242_recto","2019-08-08",1278242,"R","a98760961ab9d6fcf809ce7a01f24faf9a7cbb86.jpg"],["2019-08-09_1275545_recto","2019-08-09",1275545,"R","56836e76f365e62f8f48f470583d28af81617a68.jpg"],["2019-08-14_1296727_recto","2019-08-14",1296727,"R","952da35e32e0b7fd59d059c1626e3ac83342b250.jpg"],["2019-08-16_1284377_recto","2019-08-16",1284377,"R","dc9e11e616bfd02af67a6747699a31e34e9baddb.jpg"],["2019-08-17_1285696_recto","2019-08-17",1285696,"R","c6dedcf5027cf0eccef4d5823d84df780903f41f.jpg"],["2019-08-22_1284473_recto","2019-08-22",1284473,"R","85d11e2969a26e491d78e152b45f544628f67fd7.jpg"],["2019-08-23_1283760_recto","2019-08-23",1283760,"R","4007f18e85ff494b9fc2d6a9f7b17a9d188d7b84.jpg"],["2019-08-24_1301543_recto","2019-08-24",1301543,"R","81d979b1341b98a0a0294ebea757ca0ddee6ef2b.jpg"],["2019-09-07_1302119_recto","2019-09-07",1302119,"R","380d401e599197faec46e23e659decc065406915.jpg"],["2019-09-13_1301947_recto","2019-09-13",1301947,"R","4e50b6d219f828834653a0615febf45e1c5cce79.jpg"],["2019-09-19_1308046_recto","2019-09-19",1308046,"R","cafb53ae4efc0ac80bd6427a5010552480a686fa.jpg"],["2019-09-20_1307074_recto","2019-09-20",1307074,"R","0dc9f14baa393f12d2a07fbf0c6b87bb05a2f6ef.jpg"],["2019-09-21_1299045_recto","2019-09-21",1299045,"R","146f4ba5ced48121789b164282308da9810d7b25.jpg"],["2019-09-26_1309729_recto","2019-09-26",1309729,"R","f34a74ff018515c4528fc28a8da38d1c2ecaa96a.jpg"],["2019-09-27_1307585_recto","2019-09-27",1307585,"R","670f7dce43bfa19881a4b2e938fa49b21a474236.jpg"],["2019-10-10_1314239_recto","2019-10-10",1314239,"R","bbd9c038e7f8fa12101f7cce1d7c1c3351656ffe.jpg"],["2019-10-11_1304432_recto","2019-10-11",1304432,"R","35151fa263e24a6ce3df3ff13bda4c0b6dca2355.jpg"],["2019-10-16_1326844_recto","2019-10-16",1326844,"R","7abe56327b1f1d8f2ebc2d46602230e1ea157a0c.jpg"],["2019-10-24_1322949_recto","2019-10-24",1322949,"R","c7ef026a8cffafdef137acbc1e70449f768d30da.jpg"],["2019-10-25_1313514_recto","2019-10-25",1313514,"R","81eb2e631c6c6281791b37d293e24de07f1bf302.jpg"],["2019-10-30_1319626_recto","2019-10-30",1319626,"R","bfaa0917eb6a6780b3cba879e86b1e602aba9c32.jpg"],["2019-10-31_1317411_recto","2019-10-31",1317411,"R","a14aafda27fe39fc83168ab5ed89826b0162b1aa.jpg"],["2019-11-02_1316836_recto","2019-11-02",1316836,"R","a6a070393781e897a587e91d4f79d99c862d2b48.jpg"],["2019-11-07_1342649_recto","2019-11-07",1342649,"R","6e59cee76a19bcdf30edcf6f7e597c0fa726317c.jpg"],["2019-11-08_1327009_recto","2019-11-08",1327009,"R","27a25f90b67a554236380c82655d7b7133267927.jpg"],["2019-11-14_1320442_recto","2019-11-14",1320442,"R","886759cbfca8b4d012c9fb5acb4784dfcd8b1e28.jpg"],["2019-11-15_1316872_recto","2019-11-15",1316872,"R","63e1bb9804b2e7d3cf85710f495f9f4b7d003bdd.jpg"],["2019-11-23_1343299_recto","2019-11-23",1343299,"R","342ceca853fe7b194dd0dd3672fc522188a8133f.jpg"],["2019-11-27_1343393_recto","2019-11-27",1343393,"R","1cb8da905f55b9fb74d33de75303f3e7a9997809.jpg"],["2019-11-29_1345879_recto","2019-11-29",1345879,"R","95509016a3ab49f524fc1613c4d4e868a2f240d6.jpg"],["2019-11-30_1333646_recto","2019-11-30",1333646,"R","b289a3c2965bb055b1c9383abc6020373d218a94.jpg"],["2019-12-04_1321662_recto","2019-12-04",1321662,"R","93d79425d7b940fd72277916dc5f04d838be3af5.jpg"],["2019-12-05_1342612_recto","2019-12-05",1342612,"R","297d041d8c0568b3d6fedf734c479934b0f4a050.jpg"],["2019-12-11_1350107_recto","2019-12-11",1350107,"R","a0172d4e81a89b8250d0126fa120e42c9ca93c09.jpg"],["2019-12-12_1351458_recto","2019-12-12",1351458,"R","1e23dfae3b3c7fafab603c6f5abb12e453b79cf6.jpg"],["2019-12-20_1349283_recto","2019-12-20",1349283,"R","38f51f80798bc6c2769ef6e6ab64c3cb5c1bbc74.jpg"],["2019-12-21_1343408_recto","2019-12-21",1343408,"R","3d2ff558beb2c64790ba47770ad1a9e037acfc59.jpg"],["2019-12-31_1342510_recto","2019-12-31",1342510,"R","b12649760f637880b513063535f84d10e2d6d6d6.jpg"],["2020-01-03_1362834_recto","2020-01-03",1362834,"R","118904644c7bf70101e534b8177aa99fe1fcc286.jpg"],["2020-01-09_1355570_recto","2020-01-09",1355570,"R","463681915cb5db1157f9d4500f6a6b6971718c6c.jpg"],["2020-01-23_1374445_recto","2020-01-23",1374445,"R","877da3417511f327915b1eba364f2cca8789d808.jpg"],["2020-01-25_1365577_recto","2020-01-25",1365577,"R","d0c40094b00bf450ba7334d8f53037a0556b382a.jpg"],["2020-01-29_1371439_recto","2020-01-29",1371439,"R","77f9d4cf23450e137937237d6041d33fba8381f7.jpg"],["2020-01-30_1368151_recto","2020-01-30",1368151,"R","8e83cafaff81f89a51e4246f90e5ba069dc10028.jpg"],["2020-02-05_1374565_recto","2020-02-05",1374565,"R","9fdb963eac052850fbaeab60e4f1464970ed58f9.jpg"],["2020-02-12_1378687_recto","2020-02-12",1378687,"R","e3c79e9f81ff8cb49617dd7886aa192257e2dccb.jpg"],["2020-02-20_1385770_recto","2020-02-20",1385770,"R","ee1e32ef1a5f136e4599a1e9c51d8e81460c8283.jpg"],["2020-02-21_1374525_recto","2020-02-21",1374525,"R","29c1df82025ed233e6aec5760e5a0e3ebd2447bf.jpg"],["2020-02-28_1382781_recto","2020-02-28",1382781,"R","653e7fc16078ae1f85167a31c3f0a656acbb17dd.jpg"],["2020-02-29_1376602_recto","2020-02-29",1376602,"R","c8ab28d754596eef5674cadd1c7a085259faa211.jpg"],["2020-03-11_1397331_recto","2020-03-11",1397331,"R","f8a5d1f9a18eec4c07ccfafb8cdda86942e7329c.jpg"],["2020-03-13_1383552_recto","2020-03-13",1383552,"R","37fd5504f117542c150846032bc611c9e4dfc86f.jpg"],["2020-03-27_1388739_recto","2020-03-27",1388739,"R","bc78ef7664aa67870f5c7006a7271f408c1573be.jpg"],["2020-04-02_1400314_recto","2020-04-02",1400314,"R","2a7f691c4c0906277b27298ca1d3185c207371eb.jpg"],["2020-04-10_1400350_recto","2020-04-10",1400350,"R","7948fd27d5751f4508136198d6d98f36b74ca293.jpg"],["2020-05-22_1399542_recto","2020-05-22",1399542,"R","7b707843240373716ead126bd4d4b5a429e753a3.jpg"],["2021-09-10_1455745_recto","2021-09-10",1455745,"R","9d9777ecaf4fc30480658a4f5a6d77ee43a0b98a.jpg"],["2021-09-10_1455745_verso","2021-09-10",1455745,"V","514601f6b0166b4beced7c3ed32761ff46d6040f.jpg"],["2021-10-01_1463157_recto","2021-10-01",1463157,"R","52e69e94fc1bfd63c4931e35c2f35f20ae19c994.jpg"],["2021-10-02_1461600_recto","2021-10-02",1461600,"R","5d05bef60cbbcfaa0a08d8bf78ea129f7fca1616.jpg"],["2021-10-14_1467480_recto","2021-10-14",1467480,"R","f195b388fbf1e603fe4952313965ef6c3783636a.jpg"],["2021-10-15_1468020_recto","2021-10-15",1468020,"R","41c289cd8087a703b5751730b709d4f5b7412004.jpg"],["2021-10-16_1462161_recto","2021-10-16",1462161,"R","546988f23d15cf6399105de1fb78f64219a1f3d9.jpg"],["2021-10-22_1466915_recto","2021-10-22",1466915,"R","1359d537dc96807155fa650d74b1aa3ee0fc3eb5.jpg"],["2021-11-05_1472573_recto","2021-11-05",1472573,"R","e4dff5e8df42bb7a5e84d3467bba24224caa0b97.jpg"],["2021-11-26_1477688_recto","2021-11-26",1477688,"R","e924252e60211c1101b47dd70fa60b749e88bc80.jpg"],["2021-12-04_1479232_recto","2021-12-04",1479232,"R","6e81e1b207ea4e0e460fbb6a857978e6625ebdfc.jpg"],["2021-12-09_1478582_recto","2021-12-09",1478582,"R","ef553e92b567f5860cab279858e331f804ad74c1.jpg"],["2021-12-30_1488991_recto","2021-12-30",1488991,"R","473ffb9c006385c121656dac5c96893be1c780ac.jpg"],["2022-01-07_1487063_recto","2022-01-07",1487063,"R","fc3d05c98e47e7581bc59abac851d11790067315.jpg"],["2022-01-09_1487060_recto","2022-01-09",1487060,"R","f21641744626a2166746b05e534c27341c88d728.jpg"],["2022-01-15_1487058_recto","2022-01-15",1487058,"R","7ee667a82d3ec09c4492ab76b80171c209bf5aaf.jpg"],["2022-01-16_1491184_recto","2022-01-16",1491184,"R","700fad413d0374102b8f482cd33df78caca95c90.jpg"],["2022-01-21_1487059_recto","2022-01-21",1487059,"R","157140f92916db53a45bb32758aa309de9892d12.jpg"],["2022-01-28_1488997_recto","2022-01-28",1488997,"R","d124349e68888ba044e4174996acc95c55e67329.jpg"],["2022-02-13_1493648_recto","2022-02-13",1493648,"R","3a88ec824dbf02144d332b2e167b05af68d0f2fc.jpg"],["2022-02-26_1495379_recto","2022-02-26",1495379,"R","38c4883eb6fa2311f6cfcac61f1dcbafdc775a2a.jpg"],["2022-03-04_1502865_recto","2022-03-04",1502865,"R","a929918dbce7bc4a8525a729a19afe72f6913c8a.jpg"],["2022-03-05_1502029_recto","2022-03-05",1502029,"R","0033c6ac808ac1ec03d9b5c66d3f5e49cf5407c3.jpg"],["2022-03-11_1504224_recto","2022-03-11",1504224,"R","fa6d22cac1556d44cefe7bac15cd641f142a6e2d.jpg"],["2022-03-18_1501605_recto","2022-03-18",1501605,"R","a673cc1642806d938ea2a8442de50bfd75b3c28d.jpg"],["2022-03-19_1496553_recto","2022-03-19",1496553,"R","a693a85a8df570c75c8c59f2ee535b16dfc1840c.jpg"],["2022-03-26_1508374_recto","2022-03-26",1508374,"R","fb03c0536e4e70cf5fbcd0faf741a14aa7ca7d91.jpg"],["2022-04-02_1509256_recto","2022-04-02",1509256,"R","4a32e3a2f1bd981df3190fb27ddc0fc3a0afbb8b.jpg"],["2022-04-08_1512885_recto","2022-04-08",1512885,"R","306838fba0282c6a698de6049bafb25c96ae0e60.jpg"],["2022-04-15_1509268_recto","2022-04-15",1509268,"R","bdc784981d1c61cc8fd1d52fd25fea486a782f6e.jpg"],["2022-04-16_1510461_recto","2022-04-16",1510461,"R","87e028495fcf340ac9e257cf98498ab9df166ba6.jpg"],["2022-04-23_1515630_recto","2022-04-23",1515630,"R","9153f0deeb9eaedb415f9384549f303a519bc873.jpg"],["2022-04-29_1506974_recto","2022-04-29",1506974,"R","d40439f1d3052c4fa501152e1e43a779b34cd065.jpg"],["2022-04-30_1519625_recto","2022-04-30",1519625,"R","953affa2a2e914ca4463e107f64233b340d534a5.jpg"],["2022-05-12_1528316_recto","2022-05-12",1528316,"R","ff00329110205ade65b2d9a3043bc46ddd9e6df0.jpg"],["2022-05-13_1515642_recto","2022-05-13",1515642,"R","7770865addd9cb5af43335991cb83be93278a213.jpg"],["2022-05-20_1516883_recto","2022-05-20",1516883,"R","16694c707f5efa826277c0dd90da44e87e870023.jpg"],["2022-05-26_1518552_recto","2022-05-26",1518552,"R","e1a974048efb7cf676e5d6e79f5071dafba526c3.jpg"],["2022-05-27_1517579_recto","2022-05-27",1517579,"R","dcdb8ab2dfcf2cf0496a6d0a622021c9ba62fa50.jpg"],["2022-05-28_1521973_recto","2022-05-28",1521973,"R","2c1afb0a38d4e25434c1ff73c76e415647d01fcb.jpg"],["2022-06-03_1535160_recto","2022-06-03",1535160,"R","d2a36be8766845cfe5a65b01eb83cf98a7070b4a.jpg"],["2022-06-04_1524028_recto","2022-06-04",1524028,"R","456afb41781fdcdd376284dff679c3bfa840a549.jpg"],["2022-06-10_1533463_recto","2022-06-10",1533463,"R","e2e1a9dde3b9e0ba7d4ed3e3e6b310084ae7a895.jpg"],["2022-06-17_1542921_recto","2022-06-17",1542921,"R","489404067472c54548a828466e7bd4e79766c5d1.jpg"],["2022-06-18_1540141_recto","2022-06-18",1540141,"R","0797b9c41cb729178feaaadc13732a8d5aa97912.jpg"],["2022-06-24_1526637_recto","2022-06-24",1526637,"R","c5b84f591d370687dc5cb1a7c0ac2cce075b2546.jpg"],["2022-07-01_1549450_recto","2022-07-01",1549450,"R","6787b8d048dca3c75772a6343f585649ab71551a.png"],["2022-07-02_1543499_recto","2022-07-02",1543499,"R","dd4e7dcd9683e56f776ed5b759fd5a89d3915b90.jpg"],["2022-07-03_1550269_recto","2022-07-03",1550269,"R","afec9714c4ef6cf0851989a43de8dd4ab8c037c1.jpg"],["2022-07-08_1550282_recto","2022-07-08",1550282,"R","65ffb829e70650c69cf9004e2c336c4d7d27f9ad.jpg"],["2022-07-15_1550279_recto","2022-07-15",1550279,"R","61abeadbe3807b6e8d17c839bd762f578f3117f0.jpg"],["2022-07-22_1553614_recto","2022-07-22",1553614,"R","583abffd2bbf3395bbc4438d2c822189cbbb776e.jpg"],["2022-07-28_1550885_recto","2022-07-28",1550885,"R","3963c473fc8d38c11cb91dc4ad4971b90f11f2be.jpg"],["2022-07-30_1553520_recto","2022-07-30",1553520,"R","c9f0b0179d32e2a30d9a0788066aa03f6338b27d.jpg"],["2022-08-05_1558951_recto","2022-08-05",1558951,"R","2b784b669456005131f5aae110a2ca5a629d307a.jpg"],["2022-08-12_1554171_recto","2022-08-12",1554171,"R","75a2285ac9be4a2c8f3afe57bf36552e990b5857.jpg"],["2022-08-19_1556264_recto","2022-08-19",1556264,"R","7c5359e1fb681ef9262b6137c684cd68ce811408.jpg"],["2022-08-26_1558502_recto","2022-08-26",1558502,"R","0f7af741cd80eb5e53566d08fe71f019dae81ddb.jpg"],["2022-09-02_1572690_recto","2022-09-02",1572690,"R","08dedd099af2405e4d74f56ecc2ec53ff2bfd8d6.jpg"],["2022-09-03_1565713_recto","2022-09-03",1565713,"R","9aa5557c72da5723b31176e134bd724c7d53e689.jpg"],["2022-09-09_1576424_recto","2022-09-09",1576424,"R","54e86baacff2719360d5111cf42a567f477a65bd.jpg"],["2022-09-17_1569647_recto","2022-09-17",1569647,"R","47c615b568658e1a01b9a4d5f0cc85fc79394bf5.jpg"],["2022-09-23_1569651_recto","2022-09-23",1569651,"R","0c2b7874a2d87a344629b337118aeb47c3915e5d.jpg"],["2022-09-24_1567326_recto","2022-09-24",1567326,"R","57bcd2d6792fe9a101ea1cec6dd0cbaa60112ab3.jpg"],["2022-09-30_1578036_recto","2022-09-30",1578036,"R","c828f577cf0545214105542f92592d6574fea8d7.jpg"],["2022-10-08_1582083_recto","2022-10-08",1582083,"R","8881829fc48f195b9be5ac6c28b7a88f3ee57ee1.jpg"],["2022-10-15_1592814_recto","2022-10-15",1592814,"R","f76ddb165f94e2d64fe7eec3c2140c7529b223a9.jpg"],["2022-10-21_1582530_recto","2022-10-21",1582530,"R","3572817e33de9eebbe57e1680c8d4756d2ffd95d.jpg"],["2022-10-22_1582528_recto","2022-10-22",1582528,"R","d5d05cad5c8ae77647d7509d9951e19a6de4d564.jpg"],["2022-10-28_1574461_recto","2022-10-28",1574461,"R","c9dd7bdeae941168671f3e62b5cde4d1d49ac595.jpg"],["2022-11-04_1596151_recto","2022-11-04",1596151,"R","6fe25f91ec07fd2fc3263c565d67d089b7447559.jpg"],["2022-11-05_1597324_recto","2022-11-05",1597324,"R","66c756315eab87a6918335095f8369e7406b8d6b.jpg"],["2022-11-11_1599332_recto","2022-11-11",1599332,"R","27195ce9007c79bc068f42a3c04e8cf775baa6db.jpg"],["2022-11-26_1608715_recto","2022-11-26",1608715,"R","9a347f505dd74054dc4ac66cbedbfa8c00f9b705.jpg"],["2022-12-02_1612527_recto","2022-12-02",1612527,"R","c79881ea0b125e16c3298fc5d951148260f7af86.jpg"],["2022-12-09_1614263_recto","2022-12-09",1614263,"R","34cb9d352f317207656f05a614efe6ba8f7cf8ab.jpg"],["2022-12-16_1620787_recto","2022-12-16",1620787,"R","3feaab39a358baf1b60453ccd33c82a6d47c32b9.jpg"],["2022-12-17_1617475_recto","2022-12-17",1617475,"R","24e703c77eb2c1039e4e2050c3fba277140a1c84.jpg"],["2022-12-23_1623972_recto","2022-12-23",1623972,"R","7f53917145e73ffa7a780fda9ac0045059c2d9f7.jpg"],["2022-12-30_1627009_recto","2022-12-30",1627009,"R","5fea9b094bb94ed9003f7f6d0f5c20d510f54f15.jpg"],["2022-12-31_1618279_recto","2022-12-31",1618279,"R","7173e9b8ab6498ea10477f5668c6d5d536de8440.jpg"],["2023-01-20_1635441_recto","2023-01-20",1635441,"R","011896f6fc20832d5a9c9d8e7a358e2cef1e4a21.jpg"],["2023-02-24_1647962_recto","2023-02-24",1647962,"R","3c42fc461a46b16c540110294db8331d2ae9fc35.jpg"],["2023-03-17_1652725_recto","2023-03-17",1652725,"R","d384f303b6c3ae55e725467d7e3aa458d8039e9a.jpg"],["2023-03-25_1649939_recto","2023-03-25",1649939,"R","0b17884f63c410cd1b380461db0873c63e6bc51e.jpg"],["2023-03-31_1654819_recto","2023-03-31",1654819,"R","c6c9414ca91e1c5dd1689675ab8ed3c3ca1f5a52.jpg"],["2023-04-07_1664531_recto","2023-04-07",1664531,"R","39bf69033418d1f515a8c72e052a78c59fcad24c.jpg"],["2023-04-14_1670892_recto","2023-04-14",1670892,"R","14cb697d2c654ab73464a872d2ec66d7dc9245d7.jpg"],["2023-04-21_1676492_recto","2023-04-21",1676492,"R","6cd5bc62adb0c863871018e035f501a9f3c168f2.jpg"],["2023-04-29_1669866_recto","2023-04-29",1669866,"R","71a71bab5368dde7d38cc55a00746860544489db.jpg"],["2023-04-30_1665263_recto","2023-04-30",1665263,"R","d6ced6cfdde079c0f11a7c08a8b862def8e25d15.jpg"],["2023-05-05_1687103_recto","2023-05-05",1687103,"R","808bd5511ecdab39bf17f3706e7db1ca9bf06f6b.jpg"],["2023-06-02_1693573_recto","2023-06-02",1693573,"R","c8315229dc9e7d60ccd8a18b7b64a8e70102f6fa.jpg"],["2023-06-08_1712161_recto","2023-06-08",1712161,"R","d9dd06027ca9bbb00d0b0f7fc50e5374d47340db.jpg"],["2023-06-09_1708710_recto","2023-06-09",1708710,"R","3298d2c6967a5e70244b010fa45259fc877c8939.jpg"],["2023-06-16_1712764_recto","2023-06-16",1712764,"R","44d75fc5b2081f1915bcdbea3f6e1631e153660a.jpg"],["2023-06-23_1712784_recto","2023-06-23",1712784,"R","1397e85555f2bdc0cf0b229829c211aa5f259bf1.jpg"],["2023-06-30_1722975_recto","2023-06-30",1722975,"R","52a5f5c480b1afee1b3c73cf414660d92dcd6a05.jpg"],["2023-07-01_1709153_recto","2023-07-01",1709153,"R","d42133cf28ca49f9911afc1546e544766a726906.jpg"],["2023-07-07_1730389_recto","2023-07-07",1730389,"R","66a7ec269ee1c38fa31c0b65fc2a87d9b43cc1ae.jpg"],["2023-07-14_1729870_recto","2023-07-14",1729870,"R","b329dc6bcdd094c22be08aa2082e4a6332236b1a.jpg"],["2023-07-15_1693579_recto","2023-07-15",1693579,"R","5d7b199a80b44d425b0d141b90db594de483164a.jpg"],["2023-07-22_1736576_recto","2023-07-22",1736576,"R","8e5f75c371ee6c07f53e1a42978ec5a10efc833c.jpg"],["2023-07-29_1731870_recto","2023-07-29",1731870,"R","d2e10a86e0f84afcbaff513035c01fb6581cfeeb.jpg"],["2023-08-04_1739481_recto","2023-08-04",1739481,"R","e7653ae16d78d507618afcc098431795be24c5ac.jpg"],["2023-08-05_1732695_recto","2023-08-05",1732695,"R","84c5c66be5b0a6d15d44c8d21fc2e8464be5656f.jpg"],["2023-08-17_1744643_recto","2023-08-17",1744643,"R","e237895f6419556d7fb505fe7993132e3504b140.jpg"],["2023-08-25_1740765_recto","2023-08-25",1740765,"R","4dc99a93361a464d998caf11f4e799759b5a2b7d.jpg"],["2023-08-26_1745925_recto","2023-08-26",1745925,"R","880f5e76611bac36d6ae5052b0dddc943558461b.jpg"],["2023-09-01_1757425_recto","2023-09-01",1757425,"R","743801253da2d3b879607815b10e27cd41d81061.jpg"],["2023-09-08_1757452_recto","2023-09-08",1757452,"R","69423b116bc2b92abf06ab1fa4b14a9587505fd7.jpg"],["2023-09-16_1757422_recto","2023-09-16",1757422,"R","7aaa2c4015eb859a438c33ab381a63a5b836c88f.jpg"],["2023-09-22_1754422_recto","2023-09-22",1754422,"R","2dbbbf16ae652b83c88f6b156d3a57c8dd85e5d7.jpg"],["2023-09-23_1754261_recto","2023-09-23",1754261,"R","a8185c990fa4d7707acb6d5f6edc79a45c1f8128.jpg"],["2023-09-29_1758218_recto","2023-09-29",1758218,"R","7cab341f3396e93308a93818660518164bd6493b.jpg"],["2023-09-30_1771296_recto","2023-09-30",1771296,"R","cbbc98ea9db89f347ec635e885de1525c713431a.jpg"],["2023-10-13_1776164_recto","2023-10-13",1776164,"R","f1205d68751139da74747329bb5247f35275cbbc.jpg"],["2023-10-14_1769279_recto","2023-10-14",1769279,"R","10d921fcfe663c476c04ae91a8981e61e5069925.jpg"],["2023-10-19_1770785_recto","2023-10-19",1770785,"R","15bc785750abee943cabfa844d0f306804551b5f.jpg"],["2023-10-19_1770785_verso","2023-10-19",1770785,"V","bf7ca72ec8a5a92946c6f408a28d43d8756d105a.jpg"],["2023-10-20_1769298_recto","2023-10-20",1769298,"R","0e1c30427ec36a766ea11960d50d0778794c7b7b.jpg"],["2023-10-21_1769410_recto","2023-10-21",1769410,"R","52fbae5721f8be0cb50904e0c46288c9107a0ab7.jpg"],["2023-10-27_1766724_recto","2023-10-27",1766724,"R","18525967c09c01e21fbc1e020376c7257b090608.jpg"],["2023-11-03_1781380_recto","2023-11-03",1781380,"R","cfcd50803be04dd0bed41e00d1916c52c94ba961.jpg"],["2023-11-09_1785632_recto","2023-11-09",1785632,"R","81c65b21e1786e414321539fe220a3c4af435e8f.jpg"],["2023-11-16_1790955_recto","2023-11-16",1790955,"R","61a7fccbec5043a6f265ea7a7579d71742c720b4.jpg"],["2023-11-18_1785542_recto","2023-11-18",1785542,"R","97620cb8ed4773750fb743ed0db6949a766c64aa.jpg"],["2023-11-24_1790151_recto","2023-11-24",1790151,"R","1127173ff73fcf8f7bb47ed3cdf6cd84616b7387.jpg"],["2023-11-25_1784895_recto","2023-11-25",1784895,"R","e5651804f490a644ba0b66cab4ec73962a7fbb4f.jpg"],["2023-12-02_1809237_recto","2023-12-02",1809237,"R","80fa1398654013c23d49788cbc0f75c85ae4b376.jpg"],["2023-12-08_1807345_recto","2023-12-08",1807345,"R","6ba116bd90acfdaf5405b8d3e74027b84a36de07.jpg"],["2023-12-16_1769874_recto","2023-12-16",1769874,"R","b148394058636b7030e0952101eedf7814f77a72.jpg"],["2023-12-23_1813822_recto","2023-12-23",1813822,"R","f8648e42c311c85c4fa0e56cde27d0b0b803afe0.jpg"],["2023-12-30_1817593_recto","2023-12-30",1817593,"R","71dcebb08f9e340745972ed6c99aa05d3c13bb22.jpg"],["2023-12-31_1810729_recto","2023-12-31",1810729,"R","9feb1c5bdf0be32a644d5c9627e6a73853d0864c.jpg"],["2024-01-05_1827153_recto","2024-01-05",1827153,"R","95fb15b5582ca9df4c70fb9e04f1eb4046387052.jpg"],["2024-01-11_1819240_recto","2024-01-11",1819240,"R","a14898ecf4fcde5babd2d40bbd4bf1ed6213101c.jpg"],["2024-01-12_1816706_recto","2024-01-12",1816706,"R","13e793bcded51457e3eab44e640291b0ebe3ed11.jpg"],["2024-01-19_1824107_recto","2024-01-19",1824107,"R","b3cc148edfbd36953cbc2fc4733fd87fd6417a58.jpg"],["2024-01-20_1835355_recto","2024-01-20",1835355,"R","1f412f6b1c38895b007922de28acd82c66dfe683.jpg"],["2024-01-26_1824118_recto","2024-01-26",1824118,"R","c3d4dbe63ae81a24f2419250c750ace2661a9647.jpg"],["2024-02-02_1839429_recto","2024-02-02",1839429,"R","d1081da5429ff1e112c83a48da64f176cb9d8ce5.jpg"],["2024-02-09_1837115_recto","2024-02-09",1837115,"R","e496f1bc71ab0875f7473e7f73fa13a54bcfb15e.jpg"],["2024-02-16_1844871_recto","2024-02-16",1844871,"R","4fc0409ab05fa0752552c4b3593ce50692ecd3a6.jpg"],["2024-02-17_1850748_recto","2024-02-17",1850748,"R","edc916cb878c3cac53ebf137c43bb4b2482d8a01.jpg"],["2024-02-23_1835304_recto","2024-02-23",1835304,"R","68476e163528b80e90b6ad7571a9ff91c9d84c04.jpg"],["2024-02-24_1852023_recto","2024-02-24",1852023,"R","2e4a939410b3545a62087329cd021783873abe37.jpg"],["2024-02-29_1859270_recto","2024-02-29",1859270,"R","686f53e0b06f546188bc7d45364353a5bab700ec.jpg"],["2024-03-01_1844910_recto","2024-03-01",1844910,"R","a361b8b5e1511f381b3c694a29e34ba23da5dc8f.jpg"],["2024-03-02_1859594_recto","2024-03-02",1859594,"R","543bea8e7501c3abbf054d8b0dc7373ac9513b55.jpg"],["2024-03-08_1848358_recto","2024-03-08",1848358,"R","f858570cffff0a2df6117c14c408cd1963b77faa.jpg"],["2024-03-15_1870314_recto","2024-03-15",1870314,"R","852a657e774b4e99855c3e06697e59a2eb08ccf0.jpg"],["2024-03-16_1871948_recto","2024-03-16",1871948,"R","0abdef9443654ee560db3a09a00dda9bd4abaf70.jpg"],["2024-03-22_1859381_recto","2024-03-22",1859381,"R","32d5a5375120f7c21666907634c21925e6950c73.jpg"],["2024-03-23_1853878_recto","2024-03-23",1853878,"R","c364081335872810de323d0db75ef028d60ccb19.jpg"],["2024-03-29_1873577_recto","2024-03-29",1873577,"R","ff79550dadf1f9c0fa2ce7bc1422ec0adebad3a5.jpg"],["2024-03-30_1878159_recto","2024-03-30",1878159,"R","39e439fbdead2fc56f01bcacdaaafd63c5c80cd0.jpg"],["2024-04-18_1872589_recto","2024-04-18",1872589,"R","6f93a40d120eddaa266a5199f02b522322c917c2.jpg"],["2024-04-19_1889948_recto","2024-04-19",1889948,"R","6801de37c76d5f11e866f6c00bb93ecbdd747818.jpg"],["2024-04-26_1883655_recto","2024-04-26",1883655,"R","0b20f9ce56f4a5e4502583ee910cc7191c1ea5c5.jpg"],["2024-05-02_1901449_recto","2024-05-02",1901449,"R","094029c65a3fb006e5742ea9873d3f4167631544.jpg"],["2024-05-03_1898922_recto","2024-05-03",1898922,"R","da5b4f4de00e61d1b923269c049da2e3b05354fd.jpg"],["2024-05-05_1895478_recto","2024-05-05",1895478,"R","1d4094e3eba25cc112e9d15d483ba82e788f589b.jpg"],["2024-05-10_1895764_recto","2024-05-10",1895764,"R","96123711c30ba3b83ef43c6d89c41e0f4190dca2.jpg"],["2024-05-17_1884179_recto","2024-05-17",1884179,"R","06159af21e5777b5b0661f2132abe2af182709f7.jpg"],["2024-05-18_1886474_recto","2024-05-18",1886474,"R","3d1e3e2cfa6c447c0aaf7f52c1f0bf42fec07876.jpg"],["2024-05-24_1901808_recto","2024-05-24",1901808,"R","c1c70e272ba24a03cda517400cce12cf103209a7.jpg"],["2024-05-25_1901456_recto","2024-05-25",1901456,"R","26fb13dc8f1a3ed5ddd9d46fece00154c2ad619f.jpg"],["2024-05-26_1889845_recto","2024-05-26",1889845,"R","9b8ff721068026fe3691d95bba5105a2a01bbe4a.jpg"],["2024-06-01_1915509_recto","2024-06-01",1915509,"R","3833dee0656fada1f3b81b96bb062b07eff639a5.jpg"],["2024-06-06_1918137_recto","2024-06-06",1918137,"R","c7c3312365c00932cfb60ba5d1b08c40a06e817b.jpg"],["2024-06-07_1924845_recto","2024-06-07",1924845,"R","8deff535405f73b03c23326d6e28cf3b850487ef.jpg"],["2024-06-15_1915629_recto","2024-06-15",1915629,"R","1454c86ffd1ba83e38d32a225200ea7b274b7dd3.jpg"],["2024-06-21_1917440_recto","2024-06-21",1917440,"R","cef993f1e1ee1ce277dd8aaf33353118724c279e.jpg"],["2024-06-22_1914558_recto","2024-06-22",1914558,"R","164dfd4c879c1d04dbde8c2f10274fdb8e516803.jpg"],["2024-06-28_1915104_recto","2024-06-28",1915104,"R","5f04abd0d2e9997926d5e390d2d91ecece924258.jpg"],["2024-07-04_1934457_recto","2024-07-04",1934457,"R","c1a0bef1d27af61f50c03ae3974e138a0a716368.jpg"],["2024-07-05_1943084_recto","2024-07-05",1943084,"R","c426ca23d3e54103b43f3ffe37166bc26d7b29f1.jpg"],["2024-07-06_1937759_recto","2024-07-06",1937759,"R","83faa668a71f5e2c206bb08f1abda9b2fdec0ac1.jpg"],["2024-07-18_1950450_recto","2024-07-18",1950450,"R","71b2caf0108fe894dffe2ac03a2682e3530a706e.jpg"],["2024-07-26_1957197_recto","2024-07-26",1957197,"R","3fbccba226bb7d3ca6a2862b0e611b1e71a5dd74.jpg"],["2024-07-27_1943137_recto","2024-07-27",1943137,"R","17a6dbc7e4763b96febbf92344873cc41836fcae.jpg"],["2024-08-03_1967864_recto","2024-08-03",1967864,"R","1835808889674e33e2bd07212fc070f37f9c0d8e.jpg"],["2024-08-09_1962179_recto","2024-08-09",1962179,"R","4966736f6729673db44e3e65cb52d3c1a28729ae.jpg"],["2024-08-16_1975692_recto","2024-08-16",1975692,"R","366952de0319456d2635ebc55f3c0074eb379a9b.jpg"],["2024-08-17_1976515_recto","2024-08-17",1976515,"R","74c033308bed6d067f7107e0cc3f7b63d617a51d.jpg"],["2024-08-23_1972924_recto","2024-08-23",1972924,"R","13c4dcfd9c6ac7e22e8aeb3595e38f317b2803e1.jpg"],["2024-08-31_1966393_recto","2024-08-31",1966393,"R","dfc5f5903b3ad619042da7083f8e78f4eaed8965.jpg"],["2024-09-01_1981544_recto","2024-09-01",1981544,"R","96f523cdd67abb5ccb099f2aa966fbed7e9cc4bd.jpg"],["2024-09-07_1984684_recto","2024-09-07",1984684,"R","9dd75aab54f6e639cb6871096781bc3ea662c111.jpg"],["2024-09-27_1995535_recto","2024-09-27",1995535,"R","2d86e98d65e92c6b15bfba7b2dd542a979b9e2a8.jpg"],["2024-09-28_1972894_recto","2024-09-28",1972894,"R","a93c2a01c4259a532108e91e04b916217dcb22dd.jpg"],["2024-10-05_1972918_recto","2024-10-05",1972918,"R","e9070fdde6abaa4ad0a9e212f54c88752d9bccb8.jpg"],["2024-10-11_1972873_recto","2024-10-11",1972873,"R","e3aaca218039c4ec60cfeb518ed72c14ba1a3e5b.jpg"],["2024-10-18_2004748_recto","2024-10-18",2004748,"R","4c3051d56c8a5c47f0ccee8d9dccbf91e593ba4b.jpg"],["2024-10-19_2013966_recto","2024-10-19",2013966,"R","d1d2148f351a01cdeef463f137e3925a57f8476d.jpg"],["2024-10-25_2010595_recto","2024-10-25",2010595,"R","455d75a8b42467f6a2599a15202207b6b209c37e.jpg"],["2024-11-01_2009154_recto","2024-11-01",2009154,"R","708f0881dc5d167982c6a474b395962a96a6d0e9.jpg"],["2024-11-02_2010598_recto","2024-11-02",2010598,"R","c1aba4285ae5c87de1c04aa2e8fde4f5390d97fa.jpg"],["2024-11-14_2026885_recto","2024-11-14",2026885,"R","991fa82eff597b13b044aebdecad9602a714f241.jpg"],["2024-11-15_2020055_recto","2024-11-15",2020055,"R","cf693706af3acd47ab04a290d6b74274814fa837.jpg"],["2024-11-16_2020061_recto","2024-11-16",2020061,"R","920bcd020d6393c842e2f30981d91a5df90b4a6f.jpg"],["2024-11-17_2020048_recto","2024-11-17",2020048,"R","627f34db71716f04f164bd7b945de65e7bbc294b.jpg"],["2024-11-22_2030324_recto","2024-11-22",2030324,"R","fb8961aaf952cf2e9dbc9c9a7028ebb55fabd94b.jpg"],["2024-11-23_2024126_recto","2024-11-23",2024126,"R","e4395c3ce818dc7ffb8c3de517aeef19d44504e2.jpg"],["2024-11-29_2027998_recto","2024-11-29",2027998,"R","15d5916bf63983539f0f5c5da0e799de4624cb74.jpg"],["2024-11-30_2028058_recto","2024-11-30",2028058,"R","5e47837cf23a6f4bd1951cc037e61dfe32a8a91b.jpg"],["2024-12-06_2037660_recto","2024-12-06",2037660,"R","0547507bccc98cf9016be5da83df197961ffbeb7.jpg"],["2024-12-13_2046697_recto","2024-12-13",2046697,"R","64d4d5e7947efcb714a3c4d681d7647d81345794.jpg"],["2024-12-21_2049536_recto","2024-12-21",2049536,"R","402d94702c3ccada882b9626e11f9a3d2cc81c57.jpg"],["2024-12-27_2051597_recto","2024-12-27",2051597,"R","a8e04615f4dfbfdc69fa81c4124b0157ea296feb.jpg"],["2024-12-28_2053287_recto","2024-12-28",2053287,"R","2cd7fd696ad621860f466ce37daaca4990fb5065.jpg"],["2024-12-31_2042144_recto","2024-12-31",2042144,"R","9e8aac194ecbee84935e815ccddf3b381d818af6.jpg"],["2025-01-10_2060839_recto","2025-01-10",2060839,"R","1d21b8de64b44667e3ff7e09fa8b51c258c1d57c.jpg"],["2025-01-17_2056157_recto","2025-01-17",2056157,"R","41596aba17c6a8bc9db3c369a25c4e252598bf55.jpg"],["2025-01-18_2070182_recto","2025-01-18",2070182,"R","1cd022efeac96ff4090463b8ef563b6ebc68507f.jpg"],["2025-01-24_2064314_recto","2025-01-24",2064314,"R","fc1cde883c13e08b87c85e26c1be2b5757098e1a.jpg"],["2025-01-25_2060453_recto","2025-01-25",2060453,"R","0bb4e396a188fdceedc8cc85973b20b391b06a8d.jpg"],["2025-02-01_2057676_recto","2025-02-01",2057676,"R","350506cd4150311dc4710c3281c57d22b6ffafd9.jpg"],["2025-02-07_2072108_recto","2025-02-07",2072108,"R","e6fa63763ee772a81d4488e4b1552ad3dc779804.jpg"],["2025-02-15_2056977_recto","2025-02-15",2056977,"R","0c279099c6553d047ab9d3d992a57896c855f203.jpg"],["2025-02-21_2076377_recto","2025-02-21",2076377,"R","890838516e35a0201fd97601a20f90342df219b9.jpg"],["2025-03-01_2097493_recto","2025-03-01",2097493,"R","4564fd31f82e5813942e0d7302027f761610a26c.jpg"],["2025-03-20_2095485_recto","2025-03-20",2095485,"R","6859eb7a2bd857c6cb35f53767fefe818bf540b3.jpg"],["2025-03-29_2113213_recto","2025-03-29",2113213,"R","a22ddff91e0b28aa0ce8ae41eb90eae3b7f734fc.jpg"],["2025-04-04_2122420_recto","2025-04-04",2122420,"R","3ec85d26c0dbffa1cd48a81e403cdf4f2c92e05b.jpg"],["2025-04-18_2131519_recto","2025-04-18",2131519,"R","62e9274e04b03e4e586c43fbdf41acb29b304082.jpg"],["2025-04-19_2119122_recto","2025-04-19",2119122,"R","f435abd3cde4600db6ab0f7cfd18cb0c9219856b.jpg"],["2025-04-25_2129382_recto","2025-04-25",2129382,"R","28c60967b0ad8a25315632a9ad18a6a7ce048583.jpg"],["2025-05-09_2133047_recto","2025-05-09",2133047,"R","fb73915d6a81b0616343424cce3473903b146271.jpg"],["2025-05-16_2138667_recto","2025-05-16",2138667,"R","90e29892341e186e42defca6a246b98d3502688e.jpg"],["2025-05-24_2138046_recto","2025-05-24",2138046,"R","f8c827480ec7ea445a2eaafd81d215aa8256a4f7.jpg"],["2025-05-25_2150503_recto","2025-05-25",2150503,"R","cdbbf88aec96725adc30f368e81f74c09a450380.jpg"],["2025-05-30_2161375_recto","2025-05-30",2161375,"R","4bc54c64957ffe34dc4afcd0a3b1b0aadcb6d2b0.jpg"],["2025-06-07_2163402_recto","2025-06-07",2163402,"R","4222ed898eb5ec297575d65421d0a37cb20b2d62.jpg"],["2025-06-13_2161957_recto","2025-06-13",2161957,"R","35990b2e3058df5d75fe348bfba4879adf603da9.jpg"],["2025-06-19_2165535_recto","2025-06-19",2165535,"R","8c8790de02e574260ea104b3ed3d8f0dfcf2a086.jpg"],["2025-06-20_2170186_recto","2025-06-20",2170186,"R","16d1c900233f06ffda4b0831da9a9b1857a80931.jpg"],["2025-06-21_2188229_recto","2025-06-21",2188229,"R","3d23fdf0d00d252d7f4b1138f7bcbb6074e720dc.jpg"],["2025-06-27_2154087_recto","2025-06-27",2154087,"R","2671a37899b8b1768bcaa1945881ea9f2c4f2cfe.jpg"],["2025-07-03_2165048_recto","2025-07-03",2165048,"R","584c45c9c88b124d011e49d796d5b880f4e63c79.jpg"],["2025-07-04_2186318_recto","2025-07-04",2186318,"R","0e0eaebcaea66671e12db3a47e56da25cba962d6.jpg"],["2025-07-11_2194640_recto","2025-07-11",2194640,"R","016574f8b1c3b53f313e0209b060219f334e2891.jpg"],["2025-07-19_2187172_recto","2025-07-19",2187172,"R","b40214169efd5636153fa91bf0da5ff1999a573d.jpg"],["2025-07-25_2199167_recto","2025-07-25",2199167,"R","c1c6be0710ab1c7f9814dce0501a27a9b64b6929.jpg"],["2025-07-26_2204338_recto","2025-07-26",2204338,"R","6bd02e0136e823d5658a41e02b0fa5b7a1f783ee.png"],["2025-08-01_2185163_recto","2025-08-01",2185163,"R","a0a09f2da80012783e3ababfcde83c54abcb6f9a.jpg"],["2025-08-08_2200472_recto","2025-08-08",2200472,"R","407646229934bb24b820dc5c3a4b0e69f59ee6d4.jpg"],["2025-08-15_2209297_recto","2025-08-15",2209297,"R","8f5cf0ef536d8b21bef80a8b400035a95264d6ad.jpg"],["2025-08-16_2218982_recto","2025-08-16",2218982,"R","bf217982cff0e7a583b45d793f6f99a8765145ae.jpg"],["2025-08-22_2214502_recto","2025-08-22",2214502,"R","f2236dcd1be8c8572395071c1b019efd72d59c25.png"],["2025-08-23_2218988_recto","2025-08-23",2218988,"R","c0d3d892bc72dfed38efeafb8fc7fd70770aa93e.jpg"],["2025-08-29_2225754_recto","2025-08-29",2225754,"R","80d0eee6d8a43a80214653df4a8189aecd1090b5.jpg"],["2025-08-30_2223413_recto","2025-08-30",2223413,"R","9411ea4d047fbd2c41629707311b73003a5d1dd6.jpg"],["2025-09-19_2239896_recto","2025-09-19",2239896,"R","747b47f05d23a1c6385e9f2033cf498f3816f3d1.jpg"],["2025-09-20_2240483_recto","2025-09-20",2240483,"R","15fa7a7da48e3e85c605e3da55679b60aef28301.jpg"],["2025-09-26_2218984_recto","2025-09-26",2218984,"R","4d270abb387d85328a9d957a9da46bf506b78871.jpg"],["2025-10-04_2235718_recto","2025-10-04",2235718,"R","ee4019c2ff8c1947c4f492a69c650b16d4c1053d.jpg"],["2025-10-10_2243831_recto","2025-10-10",2243831,"R","5ba250b03ad6af956fb3feb55bd669fcaf7808a1.jpg"],["2025-10-17_2253681_recto","2025-10-17",2253681,"R","9f01f1df16ff71a802281db05bad3a198c69c0d4.jpg"],["2025-10-18_2253685_recto","2025-10-18",2253685,"R","f507a621caf6e5ea50197fe1bee2e3ec92cffb9a.jpg"],["2025-10-24_2261714_recto","2025-10-24",2261714,"R","4952023044ac1e12a70cf5fbb1acac82e6a218db.jpg"],["2025-10-25_2268760_recto","2025-10-25",2268760,"R","fc5cace091b692caf91bb91f64a2cd03791b144f.jpg"],["2025-11-07_2252100_recto","2025-11-07",2252100,"R","921f2e233032a19c96ae06d25526c2db864d931b.jpg"],["2025-11-28_2294472_recto","2025-11-28",2294472,"R","5bf0fef8586a4b3df2876fce82d5b929dbec6837.jpg"],["2025-12-05_2294500_recto","2025-12-05",2294500,"R","39413461c3a473eb752354adb6e9a229e3086873.jpg"],["2025-12-06_2294460_recto","2025-12-06",2294460,"R","e8762dfdd6eba075860d14452e8705367017dece.jpg"],["2025-12-18_2285133_recto","2025-12-18",2285133,"R","6bec774da17558b75b6e4e1393a23d6d93fc4b6d.jpg"],["2025-12-20_2305714_recto","2025-12-20",2305714,"R","27150174b0059041f266f9c81153be7727d1a215.jpg"],["2025-12-26_2307417_recto","2025-12-26",2307417,"R","b3e63ca03c6846464850f8366a42eef1b415c92b.jpg"],["2025-12-27_2307415_recto","2025-12-27",2307415,"R","f8cc959819e7f00e1c4322fb8dd1897b13048890.jpg"],["2025-12-31_2296180_recto","2025-12-31",2296180,"R","4d51cef7146312f6e8618734b68a8b5b44c347b9.jpg"],["2026-01-03_2322186_recto","2026-01-03",2322186,"R","be7bf2e54e9773538e109ae2525027fef4d93e19.jpg"],["2026-01-09_2322266_recto","2026-01-09",2322266,"R","b2b127eab4ae9e3129e19bb4657288615e6a70b8.jpg"],["2026-01-10_2323488_recto","2026-01-10",2323488,"R","2d2167519bbbac736e20533f6ea9da9d43da8bbf.jpg"],["2026-01-16_2329254_recto","2026-01-16",2329254,"R","2ee7877c3c8c3c1c86e8334d5a01ac35b3cd0772.jpg"],["2026-01-31_2327460_recto","2026-01-31",2327460,"R","8a88b85c66ed5b027eb1a1f03cc3caaf0d95c83c.jpg"],["2026-02-06_2343919_recto","2026-02-06",2343919,"R","6d3e98db54c981dd373ba634966652d41a658840.jpg"],["2026-02-07_2332107_recto","2026-02-07",2332107,"R","8109754c32ce501a3113ba1fa46eea65713d4dfd.jpg"],["2026-02-21_2352133_recto","2026-02-21",2352133,"R","58f3d5fb58fff5f0673862f2d390013af5bc4fdb.jpg"],["2026-02-27_2345786_recto","2026-02-27",2345786,"R","8499528fa3548d12d635cf93785d0a1395325391.jpg"],["2026-03-07_2369781_recto","2026-03-07",2369781,"R","a80e48e0e4ba05737538ccfd7adfcb1b9f4e35bd.jpg"],["2026-03-27_2311898_recto","2026-03-27",2311898,"R","76a857935553cc946f1defe774b3e006956c1d35.jpg"],["2026-04-03_2384558_recto","2026-04-03",2384558,"R","0fe9d4e5ab5b380a512feec56914e8c77c78b8e1.jpg"],["2026-04-04_2392091_recto","2026-04-04",2392091,"R","16ed94ee8ae64a53d1c78d042ef515669b614420.jpg"],["2026-04-10_2384553_recto","2026-04-10",2384553,"R","c4a45828fc0a5442c82cc6ba2116ab7c60ad63f6.jpg"],["2026-04-17_2406043_recto","2026-04-17",2406043,"R","9c7218e0c78059ada1032b119f31a487e85542b1.jpg"],["2026-04-24_2379984_recto","2026-04-24",2379984,"R","e45ea8638b64534ae8efef1c33e40858ecba9d46.jpg"],["2026-04-25_2392919_recto","2026-04-25",2392919,"R","4d01de4915de762e47ca0aa5a56982ca1c26fee0.jpg"],["2026-05-01_2392143_recto","2026-05-01",2392143,"R","2bcf1884d16db4bde2828d11cd1e5291413c0af5.jpg"],["2026-05-02_2389270_recto","2026-05-02",2389270,"R","e5a99f2109306a414c8873820fef9ebfd9650518.jpg"],["2026-05-07_2418207_recto","2026-05-07",2418207,"R","f8c525b42644da3b01726f9bbea9a79e2dd0142f.jpg"],["2026-05-08_2410300_recto","2026-05-08",2410300,"R","abfd32d649819f89566324050fe533993c980bca.jpg"],["2026-05-09_2389278_recto","2026-05-09",2389278,"R","5128e69224a865e71b229809ecf569bb7433a977.jpg"],["2026-05-15_2422557_recto","2026-05-15",2422557,"R","b769689efdfe17dfe5b8dce5ca526d198e41d184.jpg"],["2026-05-16_2418218_recto","2026-05-16",2418218,"R","e9be0739165aaae939780b62bc0f27bc7d07d0c4.jpg"],["2026-05-24_2436801_recto","2026-05-24",2436801,"R","1c105fc5edd785c80598c440b4d187f9bc5653d7.jpg"],["2026-05-29_2406539_recto","2026-05-29",2406539,"R","d1fb00715ea0bf906695e572aba1730ae632b484.jpg"],["2026-06-06_2400809_recto","2026-06-06",2400809,"R","985b5f3713a61bd33d1a4d05b6dd7b147c0e2816.jpg"],["2026-06-12_2455518_recto","2026-06-12",2455518,"R","bb24551e06eca77fd8fde40605b4688bc2d77a6a.jpg"],["2026-06-19_2452493_recto","2026-06-19",2452493,"R","be965d9d71ac0c35ad3ed0e88d6bc472b8c5a93c.jpg"],["2026-06-26_2435713_recto","2026-06-26",2435713,"R","f164631624a2560e30598d3b0001377417fce53a.jpg"],["2026-07-02_2452481_recto","2026-07-02",2452481,"R","1ed6ffdd47a559d86c211ef835fb70e6222b6856.jpg"],["2026-07-04_2454028_recto","2026-07-04",2454028,"R","8d8b8cf5c5a0c9394daa7c19234113f6b61f7f0d.jpg"],["2026-07-17_2475957_recto","2026-07-17",2475957,"R","02d592008e27d1996f8c26406e971dc6023864af.jpg"],["2026-07-18_2463544_recto","2026-07-18",2463544,"R","7e5fc369051cb9ca83ecd1e2467dc2c09e72cb27.jpg"],["2026-07-24_2483959_recto","2026-07-24",2483959,"R","1358d3854b25112f943a9e18c0c44ff541ea5f5a.jpg"],["2026-07-25_2457528_recto","2026-07-25",2457528,"R","0db18766f266aafe59d0ae4fe984fee04f8a2d5c.jpg"],["2026-08-01_2486610_recto","2026-08-01",2486610,"R","6a1f0b0df7708a856a41a68d56ad86d141d955ca.jpg"],["2026-08-07_2464580_recto","2026-08-07",2464580,"R","0c60a5fb4f6abbd1224d5017a10193ea0586cd47.jpg"],["2026-08-08_2481526_recto","2026-08-08",2481526,"R","7df77e3a61a135f38114f31eea8de8cc12e33d6b.jpg"],["2026-08-14_2491526_recto","2026-08-14",2491526,"R","95beaac56ced73ee592a3bb8426b60c754c585b0.jpg"],["2026-08-21_2473998_recto","2026-08-21",2473998,"R","714547281d6c5a13ed84a7998ec035fe5fe7766d.jpg"],["2026-08-22_2481253_recto","2026-08-22",2481253,"R","c32ce7138d64abbb804e86539bfd5b22023ae82f.jpg"],["2026-08-29_2501181_recto","2026-08-29",2501181,"R","58e903df2ede23165adcc36a72bee3b7afba1e22.jpg"],["2026-09-12_2520030_recto","2026-09-12",2520030,"R","cc7584a9d5da99b6a5412f728b00d8d6ee7f9733.jpg"],["2026-09-19_2509846_recto","2026-09-19",2509846,"R","ae09dad552aef8adc290d0ffa2f08cd941e91a5f.jpg"],["2026-09-25_2507384_recto","2026-09-25",2507384,"R","da2629c674eba9ab82f91834638b4f1ad994bad4.jpg"],["2026-09-26_2534709_recto","2026-09-26",2534709,"R","a85e3e395ae94649dbd425230fc334e79e9c4a64.jpg"],["2026-10-01_2521118_recto","2026-10-01",2521118,"R","d2c62310d3486449097f00976abda731e66dd057.jpg"],["2026-10-02_2533505_recto","2026-10-02",2533505,"R","6bb48ff6e232cf7745aece5923aa2e9a04afc663.jpg"],["2026-10-03_2540465_recto","2026-10-03",2540465,"R","6cf825cc96c1164760d459e5269bc8aa15aee734.jpg"],["2026-10-16_2542113_recto","2026-10-16",2542113,"R","dab01f233aaa05611d4da619c61696006bb35110.jpg"],["2026-10-16_2542113_verso","2026-10-16",2542113,"V","86f2423161b489bbd4b545586c14f2d332580b63.jpg"],["2026-10-17_2542115_recto","2026-10-17",2542115,"R","6e51c23a9dedff7655ba6e0c7772789f6dc68cff.jpg"],["2026-10-23_2553609_recto","2026-10-23",2553609,"R","780c97d0377fc472644782a7142b27d47451a63a.jpg"],["2026-10-24_2519302_recto","2026-10-24",2519302,"R","92a92136e43ce636664cbc5f72214bc0514e9805.jpg"],["2026-10-29_2562732_recto","2026-10-29",2562732,"R","68fc09f8d128130d021fc04c14997ca3eda80399.jpg"],["2026-11-06_2537429_recto","2026-11-06",2537429,"R","e79ca3acca3d22cbd5de53940716bea0652a78a7.jpg"],["2026-11-07_2548803_recto","2026-11-07",2548803,"R","a57d6f551d8648d3c0b74e60b695df4efb8e43cb.jpg"],["2026-11-13_2559200_recto","2026-11-13",2559200,"R","e500bb68c278945150c94c1117189fa63771dcf1.jpg"],["2026-11-14_2557802_recto","2026-11-14",2557802,"R","da490ee226e6fbf01369115056ddf96dbf9a938f.jpg"],["2026-11-21_2545030_recto","2026-11-21",2545030,"R","2f2d724786c59674d9b5cd3069496342a0e37057.jpg"],["2026-11-27_2563187_recto","2026-11-27",2563187,"R","075de6f25c12044c45d18adf751e76b54e31ea83.jpg"]];
+(function () {
+  'use strict';
+  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var COLORS = ['#d1495b','#e08e0b','#c9b400','#3a9d5d','#0f9b9b','#2a7fb8','#5b5bd6','#9b4fc9','#c2459c','#8a6d3b','#6b7785'];
+  var KEY = 'goodroom-sorter-local-v1', VKEY = 'goodroom-sorter-local-view-v1';
+  var $ = function (id) { return document.getElementById(id); };
+  var flyers = CATALOG.map(function (r, i) {
+    var dd = r[1].split('-'), ra = 'https://images.ra.co/' + r[4];
+    return { i: i, stem: r[0], date: r[1], year: r[1].slice(0, 4), eid: r[2], side: r[3], ra: ra,
+             file: r[0] + r[4].slice(r[4].lastIndexOf('.')),
+             thumb: 'https://imgproxy.ra.co/_/quality:70/w:320/rt:fill/' + btoa(ra),
+             label: parseInt(dd[2], 10) + ' ' + MONTHS[parseInt(dd[1], 10) - 1] + ' ' + dd[0] };
+  });
+  var byStem = {}; flyers.forEach(function (f) { byStem[f.stem] = f; });
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function toast(t) { $('toast').textContent = t; }
+
+  // ---------- storage ----------
+  var storageOK = true;
+  try { localStorage.setItem('__gr_t', '1'); localStorage.removeItem('__gr_t'); } catch (e) { storageOK = false; }
+  var cats = [], backupAt = null, dirty = false;
+  function normCats(list) {
+    var seen = {};
+    return (Array.isArray(list) ? list : []).map(function (c, k) {
+      var members = (Array.isArray(c.members) ? c.members : []).filter(function (s) { return byStem[s]; });
+      var id = typeof c.id === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(c.id) && !seen[c.id] ? c.id : 'c' + k + Math.random().toString(36).slice(2, 7);
+      seen[id] = 1;
+      return { id: id, name: String(c.name || 'Untitled').slice(0, 40), color: COLORS.indexOf(c.color) > -1 ? c.color : COLORS[k % COLORS.length],
+               order: +c.order || k + 1, members: members, memberSet: new Set(members) };
+    }).sort(function (a, b) { return a.order - b.order; });
+  }
+  function plain() { return cats.map(function (c) { return { id: c.id, name: c.name, color: c.color, order: c.order, members: c.members.slice() }; }); }
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (saved) { cats = normCats(saved.cats); backupAt = saved.backupAt || null; dirty = !!saved.dirty; }
+  } catch (e) {}
+  function persist(markDirty) {
+    if (markDirty) dirty = true;
+    if (storageOK) {
+      try { localStorage.setItem(KEY, JSON.stringify({ cats: plain(), backupAt: backupAt, dirty: dirty })); }
+      catch (e) { storageOK = false; }
+    }
+    paintSaved();
+  }
+  function paintSaved() {
+    var el = $('saved');
+    $('storeNote').hidden = storageOK;
+    if (!storageOK) { el.className = 'saved warn'; el.textContent = dirty ? 'Not saved: use Save backup' : ''; return; }
+    el.className = 'saved' + (dirty && cats.length ? ' warn' : '');
+    if (!cats.length) { el.textContent = ''; return; }
+    var when = backupAt ? new Date(backupAt) : null;
+    el.textContent = dirty ? 'Changes since last backup' : (when ? 'Backed up ' + when.getDate() + ' ' + MONTHS[when.getMonth()] + ' ' + String(when.getHours()).padStart(2, '0') + ':' + String(when.getMinutes()).padStart(2, '0') : '');
+  }
+
+  var view = { active: [], match: 'any', size: 160 };
+  try { var v = JSON.parse(localStorage.getItem(VKEY) || 'null'); if (v) { view.active = v.active || []; view.match = v.match || 'any'; view.size = v.size || 160; } } catch (e) {}
+  function saveView() { try { localStorage.setItem(VKEY, JSON.stringify(view)); } catch (e) {} }
+  document.documentElement.style.setProperty('--tile', view.size + 'px');
+  $('tsize').value = view.size;
+  $('tsize').addEventListener('input', function () { view.size = +this.value; document.documentElement.style.setProperty('--tile', this.value + 'px'); saveView(); });
+
+  function catOf(id) { for (var k = 0; k < cats.length; k++) if (cats[k].id === id) return cats[k]; return null; }
+  function catsOfFlyer(stem) { return cats.filter(function (c) { return c.memberSet.has(stem); }); }
+
+  // ---------- images: local folder first, RA as fallback ----------
+  var mode = null; // 'local' | 'remote'
+  function gridSrc(f) { return mode === 'local' && !f.localFailed ? encodeURIComponent(f.file) : f.thumb; }
+  function bigSrc(f) { return mode === 'local' && !f.localFailed ? encodeURIComponent(f.file) : f.ra; }
+  function setImg(f) {
+    var frame = tiles[f.i].firstChild;
+    var img = document.createElement('img');
+    img.loading = 'lazy'; img.decoding = 'async'; img.alt = ''; img.referrerPolicy = 'no-referrer';
+    img.addEventListener('error', function () {
+      if (mode === 'local' && !f.localFailed) { f.localFailed = true; img.src = gridSrc(f); return; }
+      frame.innerHTML = '<span class="ph">Image unavailable</span>';
+    });
+    img.src = gridSrc(f);
+    frame.innerHTML = ''; frame.appendChild(img);
+  }
+  function startImages(m) {
+    if (mode) return;
+    mode = m; $('remoteNote').hidden = m !== 'remote' || location.protocol !== 'file:';
+    flyers.forEach(setImg);
+  }
+
+  // ---------- tiles ----------
+  var tiles = [], yearSecs = {};
+  var check = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  var mag = '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>';
+  var yearsEl = $('years');
+  var byYear = {}; flyers.forEach(function (f) { (byYear[f.year] = byYear[f.year] || []).push(f); });
+  Object.keys(byYear).sort().forEach(function (y) {
+    var sec = document.createElement('section'); sec.className = 'year';
+    sec.innerHTML = '<div class="yhead"><h2>' + y + '</h2><p></p></div>';
+    var grid = document.createElement('div'); grid.className = 'grid';
+    byYear[y].forEach(function (f) {
+      var t = document.createElement('div');
+      t.className = 'tile'; t.tabIndex = 0; t.setAttribute('role', 'checkbox'); t.setAttribute('aria-checked', 'false');
+      t.setAttribute('aria-label', f.label + (f.side === 'V' ? ' verso' : ' recto')); t.dataset.i = f.i;
+      t.innerHTML = '<div class="frame"><span class="ph">Loading</span></div><span class="mark" aria-hidden="true">' + check + '</span>' +
+        '<div class="dots"></div><div class="cap"><time datetime="' + f.date + '">' + f.label + '</time>' +
+        '<span class="side' + (f.side === 'V' ? ' v' : '') + '">' + (f.side === 'V' ? 'Verso' : 'Recto') + '</span>' +
+        '<button class="zoom" type="button" aria-label="View full size" data-zoom="' + f.i + '">' + mag + '</button></div>';
+      tiles[f.i] = t; grid.appendChild(t);
+    });
+    sec.appendChild(grid); yearsEl.appendChild(sec); yearSecs[y] = sec;
+  });
+
+  // probe: is this file sitting in the flyers folder?
+  (function () {
+    if (location.protocol !== 'file:') { startImages('remote'); return; }
+    var probe = new Image(), done = false;
+    function fin(m) { if (done) return; done = true; startImages(m); }
+    probe.onload = function () { fin('local'); };
+    probe.onerror = function () { fin('remote'); };
+    setTimeout(function () { fin('remote'); }, 4000);
+    probe.src = encodeURIComponent(flyers[0].file);
+  })();
+
+  // ---------- filtering and painting ----------
+  var selected = new Set();
+  function isShown(f) {
+    var act = view.active.filter(function (id) { return id === 'none' || catOf(id); });
+    if (!act.length) return true;
+    var mine = catsOfFlyer(f.stem).map(function (c) { return c.id; });
+    var test = function (id) { return id === 'none' ? mine.length === 0 : mine.indexOf(id) > -1; };
+    return view.match === 'all' ? act.every(test) : act.some(test);
+  }
+  function paintTile(f) {
+    var t = tiles[f.i], on = selected.has(f.stem);
+    t.classList.toggle('on', on); t.setAttribute('aria-checked', on ? 'true' : 'false');
+    var dots = catsOfFlyer(f.stem).map(function (c) { return '<i style="background:' + c.color + '" title="' + esc(c.name) + '"></i>'; }).join('');
+    var dEl = t.querySelector('.dots'); if (dEl.innerHTML !== dots) dEl.innerHTML = dots;
+    t.hidden = !isShown(f);
+  }
+  function paint() {
+    flyers.forEach(paintTile);
+    var shown = 0;
+    Object.keys(yearSecs).forEach(function (y) {
+      var n = 0; byYear[y].forEach(function (f) { if (!tiles[f.i].hidden) n++; });
+      shown += n; yearSecs[y].hidden = n === 0;
+      yearSecs[y].querySelector('p').textContent = n === byYear[y].length ? n + ' flyers' : n + ' of ' + byYear[y].length + ' flyers';
+    });
+    $('count').textContent = shown === flyers.length ? flyers.length + ' flyers' : shown + ' of ' + flyers.length + ' flyers shown';
+    $('empty').hidden = shown > 0;
+    paintCats(); paintBar(); paintSaved();
+  }
+
+  // ---------- category chips ----------
+  function paintCats() {
+    var el = $('cats'), act = view.active, html = '';
+    var uncategorized = flyers.filter(function (f) { return catsOfFlyer(f.stem).length === 0; }).length;
+    cats.forEach(function (c) {
+      html += '<span class="chip" role="button" tabindex="0" data-toggle="' + c.id + '" aria-pressed="' + (act.indexOf(c.id) > -1) + '">' +
+        '<span class="dot" style="background:' + c.color + '"></span>' + esc(c.name) + ' <span class="n">' + c.members.length + '</span>' +
+        '<button class="edit" type="button" data-edit="' + c.id + '" aria-label="Edit ' + esc(c.name) + '">&#8943;</button></span>';
+    });
+    html += '<span class="chip plain" role="button" tabindex="0" data-toggle="none" aria-pressed="' + (act.indexOf('none') > -1) + '">No category <span class="n">' + uncategorized + '</span></span>';
+    var nAct = act.filter(function (id) { return id === 'none' || catOf(id); }).length;
+    if (nAct > 1) html += '<span class="seg" role="group" aria-label="Combine categories"><button type="button" data-match="any" aria-pressed="' + (view.match === 'any') + '">In any</button><button type="button" data-match="all" aria-pressed="' + (view.match === 'all') + '">In all</button></span>';
+    if (nAct) html += '<button class="link" type="button" data-showall="1">Show all</button>';
+    html += '<span class="newcat"><input id="newName" type="text" maxlength="40" placeholder="New category" aria-label="New category name"><button class="btn" type="button" id="newBtn">' + (selected.size ? 'Create &amp; add ' + selected.size : 'Create') + '</button></span>';
+    var keep = document.activeElement && document.activeElement.id === 'newName' ? $('newName').value : null;
+    el.innerHTML = html;
+    if (keep !== null) { $('newName').value = keep; $('newName').focus(); }
+  }
+  $('cats').addEventListener('click', function (e) {
+    var ed = e.target.closest('[data-edit]'); if (ed) { e.stopPropagation(); openPanel(ed.dataset.edit); return; }
+    var tg = e.target.closest('[data-toggle]');
+    if (tg) { var id = tg.dataset.toggle, k = view.active.indexOf(id); if (k > -1) view.active.splice(k, 1); else view.active.push(id); saveView(); paint(); window.scrollTo(0, 0); return; }
+    var m = e.target.closest('[data-match]'); if (m) { view.match = m.dataset.match; saveView(); paint(); return; }
+    if (e.target.closest('[data-showall]')) { view.active = []; saveView(); paint(); return; }
+    if (e.target.id === 'newBtn') createCat();
+  });
+  $('cats').addEventListener('keydown', function (e) {
+    if (e.target.id === 'newName' && e.key === 'Enter') { e.preventDefault(); createCat(); return; }
+    var tg = e.target.closest('[data-toggle]');
+    if (tg && e.target === tg && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); tg.click(); }
+  });
+
+  // ---------- selection ----------
+  var last = null;
+  function shownOrder() { return flyers.filter(function (f) { return !tiles[f.i].hidden; }); }
+  yearsEl.addEventListener('click', function (e) {
+    var z = e.target.closest('[data-zoom]'); if (z) { e.stopPropagation(); openLb(+z.dataset.zoom); return; }
+    var t = e.target.closest('.tile'); if (!t) return;
+    var f = flyers[+t.dataset.i];
+    if (e.shiftKey && last !== null) {
+      var o = shownOrder(), a = o.indexOf(flyers[last]), b = o.indexOf(f);
+      if (a > -1 && b > -1) { var on = selected.has(flyers[last].stem); for (var k = Math.min(a, b); k <= Math.max(a, b); k++) { if (on) selected.add(o[k].stem); else selected.delete(o[k].stem); } last = f.i; paint(); return; }
+    }
+    if (selected.has(f.stem)) selected.delete(f.stem); else selected.add(f.stem);
+    last = f.i; paintTile(f); paintBar(); paintCats();
+  });
+  yearsEl.addEventListener('keydown', function (e) {
+    var t = e.target.closest('.tile'); if (t && e.target === t && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); t.click(); }
+  });
+  function paintBar() {
+    $('actionbar').hidden = selected.size === 0;
+    $('nsel').textContent = selected.size;
+    $('editGrp').hidden = cats.length === 0;
+    var prevAdd = $('addTo').value, prevRm = $('rmFrom').value;
+    var opts = cats.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + '</option>'; }).join('');
+    $('addTo').innerHTML = opts; $('rmFrom').innerHTML = opts;
+    if (catOf(prevAdd)) $('addTo').value = prevAdd;
+    if (catOf(prevRm)) $('rmFrom').value = prevRm;
+  }
+  $('selShown').onclick = function () { shownOrder().forEach(function (f) { selected.add(f.stem); }); paint(); };
+  $('selClear').onclick = function () { selected.clear(); paint(); };
+  $('addBtn').onclick = function () { var c = catOf($('addTo').value); if (c) changeMembers(c, Array.from(selected), true); };
+  $('rmBtn').onclick = function () { var c = catOf($('rmFrom').value); if (c) changeMembers(c, Array.from(selected), false); };
+
+  // ---------- category changes ----------
+  function changeMembers(c, stems, add) {
+    var set = new Set(c.members), before = set.size;
+    stems.forEach(function (s) { if (add) set.add(s); else set.delete(s); });
+    var changed = Math.abs(set.size - before);
+    c.members = flyers.filter(function (f) { return set.has(f.stem); }).map(function (f) { return f.stem; });
+    c.memberSet = new Set(c.members);
+    if (changed) persist(true);
+    paint();
+    toast(!changed ? (add ? 'Already in ' + c.name + '.' : 'None of them were in ' + c.name + '.')
+                   : (add ? 'Added ' : 'Removed ') + changed + (add ? ' to ' : ' from ') + c.name + '.');
+  }
+  function createCat() {
+    var name = ($('newName').value || '').trim();
+    if (!name) { $('newName').focus(); return; }
+    if (cats.some(function (c) { return c.name.toLowerCase() === name.toLowerCase(); })) { toast('There is already a category called ' + name + '.'); return; }
+    var used = cats.map(function (c) { return c.color; });
+    var color = COLORS.filter(function (x) { return used.indexOf(x) < 0; })[0] || COLORS[cats.length % COLORS.length];
+    var c = { id: 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name, color: color,
+              order: cats.length ? Math.max.apply(null, cats.map(function (x) { return x.order; })) + 1 : 1,
+              members: flyers.filter(function (f) { return selected.has(f.stem); }).map(function (f) { return f.stem; }) };
+    c.memberSet = new Set(c.members);
+    cats.push(c); $('newName').value = '';
+    persist(true); paint();
+    toast('Created ' + name + (c.members.length ? ' with ' + c.members.length + ' flyers.' : '.'));
+  }
+
+  // ---------- edit panel ----------
+  var editing = null, pColor = null, delArmed = false;
+  function openPanel(id) {
+    editing = catOf(id); if (!editing) return;
+    pColor = editing.color; delArmed = false;
+    $('pName').value = editing.name; $('pDel').textContent = 'Delete category';
+    $('pNote').textContent = editing.members.length + ' flyers. Deleting the category keeps the flyers; it only removes the label.';
+    $('pSw').innerHTML = COLORS.map(function (x) { return '<button type="button" style="background:' + x + '" data-c="' + x + '" aria-label="Colour ' + x + '" aria-pressed="' + (x === pColor) + '"></button>'; }).join('');
+    $('panel').hidden = false; $('pName').focus();
+  }
+  $('pSw').addEventListener('click', function (e) { var b = e.target.closest('[data-c]'); if (!b) return; pColor = b.dataset.c; Array.prototype.forEach.call(this.children, function (x) { x.setAttribute('aria-pressed', x.dataset.c === pColor); }); });
+  function closePanel() { $('panel').hidden = true; editing = null; }
+  $('pCancel').onclick = closePanel;
+  $('panel').addEventListener('click', function (e) { if (e.target === this) closePanel(); });
+  $('pSave').onclick = function () {
+    var c = editing; if (!c) return;
+    var name = $('pName').value.trim() || c.name;
+    if (cats.some(function (x) { return x !== c && x.name.toLowerCase() === name.toLowerCase(); })) { $('pNote').textContent = 'Another category already has that name.'; return; }
+    c.name = name; c.color = pColor; closePanel(); persist(true); paint(); paintLbCats();
+  };
+  $('pDel').onclick = function () {
+    var c = editing; if (!c) return;
+    if (!delArmed) { delArmed = true; this.textContent = 'Click again to delete ' + c.name; return; }
+    closePanel();
+    cats = cats.filter(function (x) { return x !== c; });
+    view.active = view.active.filter(function (id) { return id !== c.id; }); saveView();
+    persist(true); paint(); toast('Deleted ' + c.name + '.');
+  };
+
+  // ---------- backup ----------
+  function backupJson() {
+    return JSON.stringify({ app: 'good-room-flyer-sorter', version: 1, savedAt: new Date().toISOString(), categories: plain() }, null, 1);
+  }
+  window.__backupJson = backupJson;
+  $('bkSave').onclick = function () {
+    var now = new Date(), text = backupJson();
+    var name = 'good-room-categories-' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + '.json';
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+    a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    backupAt = now.toISOString(); dirty = false; persist(false);
+    toast('Saved ' + name + ' to your downloads.');
+  };
+  var pendingBackup = null;
+  function applyBackup(text) {
+    var data; try { data = JSON.parse(text); } catch (e) { toast('That file is not a backup from this page.'); return false; }
+    if (!data || data.app !== 'good-room-flyer-sorter' || !Array.isArray(data.categories)) { toast('That file is not a backup from this page.'); return false; }
+    cats = normCats(data.categories); backupAt = data.savedAt || new Date().toISOString(); dirty = false;
+    view.active = []; saveView(); persist(false); paint();
+    $('bkMsg').textContent = 'Loaded ' + cats.length + ' categories from the backup.'; $('bkMsg').hidden = false;
+    setTimeout(function () { $('bkMsg').hidden = true; }, 5000);
+    return true;
+  }
+  window.__applyBackup = applyBackup;
+  $('bkFile').addEventListener('change', function () {
+    var f = this.files[0]; this.value = ''; if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      if (cats.length && dirty) { pendingBackup = r.result; $('bkConfirm').hidden = false; $('bkReplace').focus(); return; }
+      applyBackup(r.result);
+    };
+    r.readAsText(f);
+  });
+  $('bkReplace').onclick = function () { var t = pendingBackup; pendingBackup = null; $('bkConfirm').hidden = true; if (t) applyBackup(t); };
+  $('bkCancel').onclick = function () { pendingBackup = null; $('bkConfirm').hidden = true; };
+
+  // ---------- lightbox ----------
+  var lbCur = -1;
+  function openLb(i) { $('lb').hidden = false; document.body.style.overflow = 'hidden'; showLb(flyers[i]); $('lbClose').focus(); }
+  function closeLb() { $('lb').hidden = true; document.body.style.overflow = ''; $('lbImg').removeAttribute('src'); if (lbCur > -1) tiles[lbCur].focus(); }
+  function showLb(f) {
+    lbCur = f.i;
+    var img = $('lbImg');
+    img.hidden = false; $('lbPh').hidden = true;
+    img.onerror = function () {
+      if (mode === 'local' && !f.localFailed) { f.localFailed = true; img.src = bigSrc(f); return; }
+      img.hidden = true; $('lbPh').hidden = false;
+    };
+    img.src = mode ? bigSrc(f) : f.ra;
+    $('lbInfo').textContent = f.label + ' · ' + (f.side === 'V' ? 'Verso' : 'Recto') + ' · Design by Bráulio Amado';
+    $('lbRa').href = 'https://ra.co/events/' + f.eid;
+    paintLbCats();
+  }
+  function paintLbCats() {
+    if (lbCur < 0) return;
+    var f = flyers[lbCur];
+    $('lbCats').innerHTML = cats.map(function (c, k) {
+      return '<button type="button" data-lbcat="' + c.id + '" aria-pressed="' + c.memberSet.has(f.stem) + '">' +
+        (k < 9 ? '<kbd>' + (k + 1) + '</kbd>' : '') + '<span class="dot" style="background:' + c.color + '"></span>' + esc(c.name) + '</button>';
+    }).join('');
+    $('lbHint').textContent = cats.length ? 'Number keys or clicks put this flyer in or out of a category.' : 'Create a category at the top of the page to sort flyers here.';
+  }
+  function lbStep(dir) { var o = shownOrder(); if (!o.length) return; var k = o.indexOf(flyers[lbCur]); k = k < 0 ? 0 : (k + dir + o.length) % o.length; showLb(o[k]); }
+  function lbToggle(c) { if (!c) return; var f = flyers[lbCur]; changeMembers(c, [f.stem], !c.memberSet.has(f.stem)); paintLbCats(); }
+  $('lbPrev').onclick = function () { lbStep(-1); };
+  $('lbNext').onclick = function () { lbStep(1); };
+  $('lbClose').onclick = closeLb;
+  $('lbStage').addEventListener('click', function (e) { if (e.target === this) closeLb(); });
+  $('lbCats').addEventListener('click', function (e) { var b = e.target.closest('[data-lbcat]'); if (b) lbToggle(catOf(b.dataset.lbcat)); });
+  document.addEventListener('keydown', function (e) {
+    if (!$('panel').hidden) { if (e.key === 'Escape') closePanel(); else if (e.key === 'Enter' && e.target.id === 'pName') $('pSave').click(); return; }
+    if ($('lb').hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); closeLb(); }
+    else if (e.key === 'ArrowLeft') lbStep(-1);
+    else if (e.key === 'ArrowRight') lbStep(1);
+    else if (/^[1-9]$/.test(e.key)) lbToggle(cats[+e.key - 1]);
+  });
+  window.addEventListener('beforeunload', function (e) { if (!storageOK && dirty && cats.length) { e.preventDefault(); e.returnValue = ''; } });
+
+  paint();
+})();
+</script>
+</body>
+</html>
