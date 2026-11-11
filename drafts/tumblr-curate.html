@@ -40,6 +40,14 @@ h1 .by { font-weight: 500; color: var(--muted); }
 .seg button { border: 0; background: var(--surface); padding: 4px 10px; cursor: pointer; font-size: 13px; font-variant-numeric: tabular-nums; }
 .seg button + button { border-left: 1px solid var(--line); }
 .seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.ychips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ychip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 3px 10px; cursor: pointer; font-size: 13px; font-variant-numeric: tabular-nums; -webkit-tap-highlight-color: transparent; }
+.ychip b { font: 700 14px var(--display); }
+.ychip small { color: var(--muted); margin-left: 4px; font-size: 12px; }
+.ychip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.ychip[aria-pressed="true"] small { color: var(--accent); }
+.ychip:disabled { opacity: .4; cursor: default; }
+.ychip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .btn { border: 1px solid var(--line); background: var(--surface); border-radius: 7px; padding: 6px 12px; cursor: pointer; white-space: nowrap; font-size: 13px; }
 .btn:hover { border-color: var(--accent); }
 .btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 500; }
@@ -145,6 +153,7 @@ main.gutter { padding-block: 4px 150px; }
       </span>
       <button class="btn" id="selAll" type="button">Select all shown</button>
     </div>
+    <div class="ychips" id="yearChips" role="group" aria-label="Years" hidden></div>
     <div id="loading" hidden>
       <div class="progress"><span id="progBar"></span></div>
       <div class="status" id="progText" role="status"></div>
@@ -154,7 +163,7 @@ main.gutter { padding-block: 4px 150px; }
 
 <main class="gutter">
   <p class="credit">Images from <a href="https://braulioamado.tumblr.com/" target="_blank" rel="noopener">Bráulio Amado's Tumblr</a>, where he shared his work until 2018. All artwork is his. This is a working page to choose which images to showcase: nothing here changes anything on Tumblr.</p>
-  <p class="howto">Tap images to select them, then delete them from the bar at the bottom. <b>Deleted</b> lets you review and restore. The magnifier opens an image full size: there, <b>Delete</b> (or the <kbd>D</kbd> key) removes it and moves to the next one. Your choices are saved in this browser as you go; <b>Save my selection</b> downloads them as a file to send for the final page.</p>
+  <p class="howto">Tap a year to see only that year (tap more years to add them). Tap images to select them, then delete them from the bar at the bottom. <b>Deleted</b> lets you review and restore. The magnifier opens an image full size: there, <b>Delete</b> (or the <kbd>D</kbd> key) removes it and moves to the next one. Your choices are saved in this browser as you go; <b>Save my selection</b> downloads them as a file to send for the final page.</p>
   <p class="notice" id="cacheNote" hidden><span id="cacheText"></span> <button class="btn" id="reload" type="button">Reload from Tumblr</button></p>
   <p class="notice" id="errNote" hidden></p>
   <div id="years"></div>
@@ -202,7 +211,7 @@ main.gutter { padding-block: 4px 150px; }
   // ---------- state ----------
   var items = [], byId = {}, tiles = {}, yearSecs = {};
   var deleted = new Set(), selected = new Set();
-  var view = { show: 'kept', kind: 'all', order: 'new' };
+  var view = { show: 'kept', kind: 'all', order: 'new', years: [] };
   try { (JSON.parse(lsGet(K_DEL) || '[]') || []).forEach(function (id) { deleted.add(String(id)); }); } catch (e) {}
   function saveDeleted() { lsSet(K_DEL, JSON.stringify(Array.from(deleted))); }
 
@@ -335,7 +344,27 @@ main.gutter { padding-block: 4px 150px; }
     if (view.show === 'kept' ? deleted.has(it.id) : !deleted.has(it.id)) return false;
     if (view.kind === 'own' && it.reblog) return false;
     if (view.kind === 'reblog' && !it.reblog) return false;
+    if (view.years.length && view.years.indexOf(it.date.slice(0, 4)) < 0) return false;
     return true;
+  }
+  function passesExceptYear(it) {
+    if (view.show === 'kept' ? deleted.has(it.id) : !deleted.has(it.id)) return false;
+    if (view.kind === 'own' && it.reblog) return false;
+    if (view.kind === 'reblog' && !it.reblog) return false;
+    return true;
+  }
+  // one button per year, with how many images it holds in the current view
+  function paintYearChips() {
+    var all = Object.keys(yearSecs).sort(), per = {};
+    if (view.order === 'new') all.reverse();
+    items.forEach(function (it) { if (passesExceptYear(it)) { var y = it.date.slice(0, 4); per[y] = (per[y] || 0) + 1; } });
+    var total = 0; all.forEach(function (y) { total += per[y] || 0; });
+    var html = '<button type="button" class="ychip" data-year="all" aria-pressed="' + (view.years.length === 0) + '"><b>All years</b><small>' + total.toLocaleString('en-US') + '</small></button>';
+    all.forEach(function (y) {
+      var n = per[y] || 0, on = view.years.indexOf(y) > -1;
+      html += '<button type="button" class="ychip" data-year="' + y + '" aria-pressed="' + on + '"' + (n || on ? '' : ' disabled') + '><b>' + y + '</b><small>' + n + '</small></button>';
+    });
+    var el = $('yearChips'); el.innerHTML = html; el.hidden = all.length < 2;
   }
   function order() { return view.order === 'new' ? items.slice().reverse() : items; }
   function shownList() { return order().filter(visible); }
@@ -356,6 +385,7 @@ main.gutter { padding-block: 4px 150px; }
       t.setAttribute('aria-checked', on ? 'true' : 'false');
       if (v) { shown++; var y = it.date.slice(0, 4); per[y] = (per[y] || 0) + 1; }
     });
+    paintYearChips();
     years.forEach(function (y) { var n = per[y] || 0; yearSecs[y].hidden = !n; yearSecs[y].querySelector('p').textContent = n + (n === 1 ? ' image' : ' images'); });
     var gone = items.filter(function (it) { return deleted.has(it.id); }).length;
     $('nKept').textContent = '(' + (items.length - gone).toLocaleString('en-US') + ')';
@@ -363,7 +393,7 @@ main.gutter { padding-block: 4px 150px; }
     $('nReb').textContent = '(' + items.filter(function (it) { return it.reblog; }).length + ')';
     $('count').textContent = items.length ? items.length.toLocaleString('en-US') + ' images' : '';
     $('empty').hidden = !items.length || shown > 0;
-    $('empty').textContent = view.show === 'gone' ? 'Nothing deleted yet.' : 'No images to show here.';
+    $('empty').textContent = view.years.length ? 'No images from ' + view.years.slice().sort().join(', ') + ' here.' : view.show === 'gone' ? 'Nothing deleted yet.' : 'No images to show here.';
     $('showKept').setAttribute('aria-pressed', view.show === 'kept'); $('showGone').setAttribute('aria-pressed', view.show === 'gone');
     Array.prototype.forEach.call(document.querySelectorAll('[data-kind]'), function (b) { b.setAttribute('aria-pressed', b.dataset.kind === view.kind); });
     Array.prototype.forEach.call(document.querySelectorAll('[data-order]'), function (b) { b.setAttribute('aria-pressed', b.dataset.order === view.order); });
@@ -381,6 +411,15 @@ main.gutter { padding-block: 4px 150px; }
   function setShow(s) { view.show = s; selected.clear(); paint(false); window.scrollTo(0, 0); }
   $('showKept').onclick = function () { setShow('kept'); };
   $('showGone').onclick = function () { setShow('gone'); };
+  $('yearChips').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-year]'); if (!b || b.disabled) return;
+    var y = b.dataset.year;
+    if (y === 'all') view.years = [];
+    else { var k = view.years.indexOf(y); if (k > -1) view.years.splice(k, 1); else view.years.push(y); }
+    selected.clear(); paint(false);
+    var top = $('years').getBoundingClientRect().top + window.scrollY - (getComputedStyle(document.querySelector('.bar')).position === 'sticky' ? document.querySelector('.bar').offsetHeight + 8 : 8);
+    if (window.scrollY > top) window.scrollTo(0, Math.max(0, top));
+  });
   $('controls').addEventListener('click', function (e) {
     var k = e.target.closest('[data-kind]'); if (k) { view.kind = k.dataset.kind; paint(false); return; }
     var o = e.target.closest('[data-order]'); if (o && o.dataset.order !== view.order) { view.order = o.dataset.order; paint(true); }
