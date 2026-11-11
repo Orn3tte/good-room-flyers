@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Bráulio Amado's Tumblr: Curation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+/* Layout: sticky header (title, counts, view controls, save/load); year sections of image tiles you tap to select; bottom bar to delete or restore the selection; full-screen viewer with zoom */
+:root {
+  --bg: #f3f3f6; --surface: #ffffff; --fg: #17161d; --muted: #63606f; --line: #dcdae3;
+  --accent: #4b2a8a; --accent-soft: #ebe5f6; --on-accent: #ffffff; --danger: #b3261e; --on-danger: #ffffff;
+  --warn: #8a5a12; --warn-soft: #f6ecd9; --shade: rgba(14, 12, 20, 0.92);
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #121117; --surface: #1b1a22; --fg: #ecebf2; --muted: #a09cad; --line: #2e2c38;
+  --accent: #b9a2ec; --accent-soft: #2a2340; --on-accent: #17121f; --danger: #f2827a; --on-danger: #2a0f0d;
+  --warn: #e2b56a; --warn-soft: #33291a; --shade: rgba(6, 5, 10, 0.95); color-scheme: dark } }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--fg); font: 14px/1.45 var(--body); }
+button, input { font: inherit; color: inherit; }
+.gutter { max-width: 1400px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); }
+.bar .gutter { padding-block: 12px 10px; display: grid; gap: 10px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+h1 { font: 700 22px/1.1 var(--display); margin: 0; letter-spacing: -0.01em; }
+h1 .by { font-weight: 500; color: var(--muted); }
+.count { color: var(--muted); font-variant-numeric: tabular-nums; }
+.row .right { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.size { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+.seg button { border: 0; background: var(--surface); padding: 4px 10px; cursor: pointer; font-size: 13px; font-variant-numeric: tabular-nums; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 7px; padding: 6px 12px; cursor: pointer; white-space: nowrap; font-size: 13px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 500; }
+.btn.danger { background: var(--danger); color: var(--on-danger); border-color: var(--danger); font-weight: 500; }
+.btn:disabled { opacity: .45; cursor: default; }
+:is(.btn, .seg button, .tile, .zoom, input):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.progress { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.progress span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+.status { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+main.gutter { padding-block: 4px 150px; }
+.credit { margin: 18px 0 0; max-width: 78ch; font-size: 15px; line-height: 1.55; }
+.credit a, .foot a { color: var(--accent); }
+.howto { color: var(--muted); font-size: 13px; margin: 10px 0 0; max-width: 95ch; }
+.notice { margin: 14px 0 0; padding: 10px 14px; border-radius: 10px; background: var(--warn-soft); color: var(--warn); max-width: 90ch; }
+.notice .btn { margin-left: 8px; }
+.year { margin-top: 28px; }
+.yhead { display: flex; align-items: baseline; gap: 12px; border-bottom: 2px solid var(--fg); padding-bottom: 6px; margin-bottom: 12px; }
+.yhead h2 { font: 700 30px/1 var(--display); margin: 0; font-variant-numeric: tabular-nums; }
+.yhead p { margin: 0; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--tile, 150px), 1fr)); gap: 12px; }
+.tile { -webkit-tap-highlight-color: transparent; position: relative; display: grid; gap: 6px; padding: 5px; border: 2px solid transparent; border-radius: 10px; background: none; cursor: pointer; text-align: left; min-width: 0; }
+.tile:hover { border-color: var(--line); }
+.frame { aspect-ratio: 4 / 5; background: var(--surface); border-radius: 6px; overflow: hidden; display: grid; place-items: center; max-width: 100%; }
+.frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.frame .ph { color: var(--muted); font-size: 12px; text-align: center; padding: 8px; }
+.cap { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 13px; }
+.cap time { font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.badge { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; padding: 1px 5px; border-radius: 4px; background: var(--warn-soft); color: var(--warn); white-space: nowrap; }
+.zoom { margin-left: auto; flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 6px; width: 28px; height: 28px; display: grid; place-items: center; cursor: zoom-in; padding: 0; }
+.zoom svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
+.mark { position: absolute; top: 11px; right: 11px; width: 24px; height: 24px; border-radius: 50%; background: var(--surface); border: 2px solid var(--line); display: grid; place-items: center; }
+.mark svg { width: 13px; height: 13px; fill: none; stroke: var(--on-accent); stroke-width: 3; opacity: 0; }
+.tile.on { border-color: var(--accent); background: var(--accent-soft); }
+.tile.on .mark { background: var(--accent); border-color: var(--accent); }
+.tile.on .mark svg { opacity: 1; }
+.tile.gone .frame img { opacity: .55; }
+.empty { color: var(--muted); padding: 48px 0; text-align: center; }
+.foot { margin: 48px 0 0; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; max-width: 80ch; }
+.actionbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -6px 24px rgba(0,0,0,.08); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.actionbar .gutter { padding-block: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.actionbar b { font: 700 18px var(--display); font-variant-numeric: tabular-nums; }
+.actionbar .end { margin-left: auto; display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(76px + env(safe-area-inset-bottom, 0px)); z-index: 60; background: var(--fg); color: var(--bg); border-radius: 8px; padding: 8px 12px; display: flex; gap: 12px; align-items: center; font-size: 13px; max-width: calc(100vw - 32px); box-shadow: 0 6px 20px rgba(0,0,0,.2); }
+.lb-open .toast { bottom: calc(118px + env(safe-area-inset-bottom, 0px)); }
+.lb-open .actionbar { display: none; }
+.toast button { border: 0; background: none; color: var(--accent-soft); font-weight: 500; cursor: pointer; text-decoration: underline; padding: 0; }
+.lb { position: fixed; inset: 0; z-index: 50; background: var(--shade); display: grid; grid-template-rows: 1fr auto; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.lb-stage { position: relative; display: grid; place-items: center; min-height: 0; padding: 16px 64px 0; overflow: hidden; touch-action: none; }
+.lb-stage img { max-width: 100%; max-height: calc(100vh - 150px); max-height: calc(100dvh - 150px); object-fit: contain; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,.5); transform-origin: 0 0; cursor: zoom-in; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; }
+.lb-stage img.zoomed { cursor: grab; }
+.lb-stage img.anim { transition: transform .2s ease; }
+@media (prefers-reduced-motion: reduce) { .lb-stage img.anim, .progress span { transition: none; } }
+.lb-stage .ph { color: #d9d6e3; }
+.lb-nav { position: absolute; z-index: 2; top: 50%; transform: translateY(-50%); width: 44px; height: 64px; border: 0; border-radius: 8px; background: rgba(255,255,255,.12); color: #fff; font-size: 26px; cursor: pointer; }
+.lb-nav:hover { background: rgba(255,255,255,.22); }
+.lb-prev { left: max(10px, env(safe-area-inset-left, 0px)); } .lb-next { right: max(10px, env(safe-area-inset-right, 0px)); }
+.lb-close { position: absolute; z-index: 2; top: 10px; right: max(10px, env(safe-area-inset-right, 0px)); border: 0; border-radius: 8px; background: rgba(255,255,255,.14); color: #fff; padding: 6px 12px; cursor: pointer; }
+.lb-gone { position: absolute; z-index: 2; top: 12px; left: max(12px, env(safe-area-inset-left, 0px)); background: #b3261e; color: #fff; border-radius: 6px; padding: 3px 8px; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+.lb-bar { display: grid; gap: 8px; justify-items: center; padding: 10px 16px 14px; color: #f2f0f7; }
+.lb-bar .info { display: flex; flex-wrap: wrap; gap: 4px 14px; justify-content: center; align-items: baseline; font-variant-numeric: tabular-nums; max-width: 100%; }
+.lb-bar .capt { color: #cfcbd9; max-width: 48ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-bar a { color: #cbbcf3; font-size: 13px; }
+.lb-bar .acts { display: flex; flex-wrap: wrap; gap: 8px 14px; justify-content: center; align-items: center; }
+.lb-del { border: 0; border-radius: 8px; padding: 7px 16px; font-weight: 500; cursor: pointer; background: #b3261e; color: #fff; }
+.lb-del.restore { background: #f2f0f7; color: #17121f; }
+.lb-hint { font-size: 12px; color: #a7a2b5; }
+.lb button:focus-visible, .lb a:focus-visible { outline: 2px solid #cbbcf3; outline-offset: 2px; }
+@media (max-width: 640px) {
+  .bar { position: static; }
+  .row .right { margin-left: 0; }
+  .lb-stage { padding: 52px 8px 0; } .lb-nav { width: 34px; height: 54px; }
+  .actionbar .end { margin-left: 0; }
+}
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="gutter">
+    <div class="row">
+      <h1>Tumblr <span class="by">by Bráulio Amado</span></h1>
+      <span class="count" id="count">Loading&hellip;</span>
+      <div class="right">
+        <label class="size" for="tsize">Size <input id="tsize" type="range" min="90" max="360" step="10" value="150"></label>
+        <button class="btn" id="saveList" type="button">Save my selection</button>
+        <label class="btn" for="loadFile">Load a saved list</label>
+        <input id="loadFile" type="file" accept=".json,application/json" hidden>
+      </div>
+    </div>
+    <div class="row" id="controls">
+      <span class="seg" role="group" aria-label="Show">
+        <button type="button" id="showKept" aria-pressed="true">To showcase <span id="nKept"></span></button>
+        <button type="button" id="showGone" aria-pressed="false">Deleted <span id="nGone"></span></button>
+      </span>
+      <span class="seg" role="group" aria-label="Post type" id="kindSeg" hidden>
+        <button type="button" data-kind="all" aria-pressed="true">All posts</button>
+        <button type="button" data-kind="own" aria-pressed="false">His posts</button>
+        <button type="button" data-kind="reblog" aria-pressed="false">Reblogs <span id="nReb"></span></button>
+      </span>
+      <span class="seg" role="group" aria-label="Order">
+        <button type="button" data-order="new" aria-pressed="true">Newest first</button>
+        <button type="button" data-order="old" aria-pressed="false">Oldest first</button>
+      </span>
+      <button class="btn" id="selAll" type="button">Select all shown</button>
+    </div>
+    <div id="loading" hidden>
+      <div class="progress"><span id="progBar"></span></div>
+      <div class="status" id="progText" role="status"></div>
+    </div>
+  </div>
+</header>
+
+<main class="gutter">
+  <p class="credit">Images from <a href="https://braulioamado.tumblr.com/" target="_blank" rel="noopener">Bráulio Amado's Tumblr</a>, where he shared his work until 2018. All artwork is his. This is a working page to choose which images to showcase: nothing here changes anything on Tumblr.</p>
+  <p class="howto">Tap images to select them, then delete them from the bar at the bottom. <b>Deleted</b> lets you review and restore. The magnifier opens an image full size: there, <b>Delete</b> (or the <kbd>D</kbd> key) removes it and moves to the next one. Your choices are saved in this browser as you go; <b>Save my selection</b> downloads them as a file to send for the final page.</p>
+  <p class="notice" id="cacheNote" hidden><span id="cacheText"></span> <button class="btn" id="reload" type="button">Reload from Tumblr</button></p>
+  <p class="notice" id="errNote" hidden></p>
+  <div id="years"></div>
+  <p class="empty" id="empty" hidden></p>
+  <p class="foot">Artwork &copy; <a href="https://badbadbadbad.com/" target="_blank" rel="noopener">Bráulio Amado</a>. Images are shown directly from Tumblr, where he published them.</p>
+</main>
+
+<div class="actionbar" id="actionbar" hidden>
+  <div class="gutter">
+    <b id="nSel">0</b><span>selected</span>
+    <button class="btn danger" id="delSel" type="button">Delete</button>
+    <button class="btn primary" id="resSel" type="button" hidden>Restore</button>
+    <span class="end">
+      <button class="btn" id="selNone" type="button">Clear selection</button>
+    </span>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden><span id="toastText"></span><button type="button" id="undo">Undo</button></div>
+
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Image viewer">
+  <div class="lb-stage" id="lbStage">
+    <span class="lb-gone" id="lbGone" hidden>Deleted</span>
+    <button class="lb-nav lb-prev" id="lbPrev" type="button" aria-label="Previous image">&#8249;</button>
+    <img id="lbImg" alt="" referrerpolicy="no-referrer">
+    <span class="ph" id="lbPh" hidden>Image unavailable</span>
+    <button class="lb-nav lb-next" id="lbNext" type="button" aria-label="Next image">&#8250;</button>
+    <button class="lb-close" id="lbClose" type="button">Close</button>
+  </div>
+  <div class="lb-bar">
+    <div class="info"><span id="lbInfo"></span><span class="capt" id="lbCapt"></span><a id="lbPost" href="#" target="_blank" rel="noopener noreferrer">Post on Tumblr</a></div>
+    <div class="acts"><button class="lb-del" id="lbDel" type="button">Delete</button><span class="lb-hint" id="lbHint"></span></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var BLOG = 'braulioamado', PER = 50;
+  var K_CACHE = 'braulio-tumblr-cache-v1', K_DEL = 'braulio-tumblr-deleted-v1', K_SIZE = 'braulio-tumblr-size';
+  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var $ = function (id) { return document.getElementById(id); };
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+
+  // ---------- state ----------
+  var items = [], byId = {}, tiles = {}, yearSecs = {};
+  var deleted = new Set(), selected = new Set();
+  var view = { show: 'kept', kind: 'all', order: 'new' };
+  try { (JSON.parse(lsGet(K_DEL) || '[]') || []).forEach(function (id) { deleted.add(String(id)); }); } catch (e) {}
+  function saveDeleted() { lsSet(K_DEL, JSON.stringify(Array.from(deleted))); }
+
+  var size = +lsGet(K_SIZE) || 150;
+  function setSize(v) { document.documentElement.style.setProperty('--tile', v + 'px'); }
+  setSize(size); $('tsize').value = size;
+  $('tsize').addEventListener('input', function () { setSize(this.value); lsSet(K_SIZE, this.value); });
+
+  function label(date) { var p = date.split('-'); return parseInt(p[2], 10) + ' ' + MONTHS[parseInt(p[1], 10) - 1] + ' ' + p[0]; }
+  function textOf(html) { if (!html) return ''; var doc = new DOMParser().parseFromString(String(html), 'text/html'); return (doc.body.textContent || '').replace(/\s+/g, ' ').trim(); }
+
+  // ---------- turning Tumblr posts into images ----------
+  function imagesFromPost(p) {
+    var out = [];
+    var date = String(p['date-gmt'] || '').slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { var ts = +p['unix-timestamp']; date = ts ? new Date(ts * 1000).toISOString().slice(0, 10) : '1970-01-01'; }
+    var reblog = !!(p['reblogged-from-url'] || p['reblogged-from-name'] || p['reblogged-root-url'] || p['reblogged-root-name']);
+    var from = p['reblogged-root-name'] || p['reblogged-from-name'] || '';
+    var base = { post: String(p['url-with-slug'] || p.url || ''), date: date, ts: +p['unix-timestamp'] || 0, reblog: reblog, from: String(from) };
+    var caption = textOf(p['photo-caption'] || p['regular-title'] || p['link-text'] || p.question || '');
+    function push(big, thumb, w, h, k) {
+      if (!big || !/^https?:\/\//.test(big)) return;
+      big = big.replace(/^http:/, 'https:'); thumb = (thumb || big).replace(/^http:/, 'https:');
+      out.push({ id: String(p.id) + '-' + k, big: big, thumb: thumb, w: +w || 0, h: +h || 0, cap: caption.slice(0, 200),
+                 post: base.post, date: base.date, ts: base.ts, reblog: base.reblog, from: base.from });
+    }
+    if (p.type === 'photo') {
+      if (p.photos && p.photos.length) p.photos.forEach(function (ph, k) { push(ph['photo-url-1280'], ph['photo-url-500'] || ph['photo-url-400'], ph.width, ph.height, k); });
+      else push(p['photo-url-1280'], p['photo-url-500'] || p['photo-url-400'], p.width, p.height, 0);
+    }
+    // images placed inside text, answer and link posts
+    var k = out.length;
+    ['regular-body', 'answer', 'link-description', 'photo-caption'].forEach(function (f) {
+      if (!p[f] || (f === 'photo-caption' && p.type === 'photo')) return;
+      var doc = new DOMParser().parseFromString(String(p[f]), 'text/html');
+      Array.prototype.forEach.call(doc.querySelectorAll('img[src]'), function (im) {
+        var src = im.getAttribute('src') || '';
+        if (/avatar|\/emoji|spacer|pixel/i.test(src)) return;
+        push(src, src, im.getAttribute('data-orig-width') || im.getAttribute('width'), im.getAttribute('data-orig-height') || im.getAttribute('height'), k++);
+      });
+    });
+    return out;
+  }
+
+  // ---------- loading the blog, one page of 50 posts at a time ----------
+  function loadPage(start) {
+    return new Promise(function (resolve, reject) {
+      try { delete window.tumblr_api_read; } catch (e) { window.tumblr_api_read = undefined; }
+      var s = document.createElement('script'), done = false;
+      var timer = setTimeout(function () { finish(new Error('timeout')); }, 20000);
+      function finish(err) {
+        if (done) return; done = true; clearTimeout(timer); s.remove();
+        var data = window.tumblr_api_read;
+        if (err || !data || !Array.isArray(data.posts)) reject(err || new Error('no data')); else resolve(data);
+      }
+      s.onload = function () { finish(null); };
+      s.onerror = function () { finish(new Error('load')); };
+      s.src = 'https://' + BLOG + '.tumblr.com/api/read/json?num=' + PER + '&start=' + start + '&_=' + Date.now();
+      document.head.appendChild(s);
+    });
+  }
+  function loadPageRetry(start) {
+    return loadPage(start).catch(function () { return new Promise(function (r) { setTimeout(r, 1500); }).then(function () { return loadPage(start); }); });
+  }
+  function fetchAll() {
+    $('loading').hidden = false; $('errNote').hidden = true; $('cacheNote').hidden = true;
+    $('progBar').style.width = '0%'; $('progText').textContent = 'Loading Bráulio’s Tumblr…';
+    var all = [], seen = {}, total = null;
+    function step(start) {
+      return loadPageRetry(start).then(function (data) {
+        if (total === null) total = +data['posts-total'] || 0;
+        data.posts.forEach(function (p) { imagesFromPost(p).forEach(function (it) { if (!seen[it.big]) { seen[it.big] = 1; all.push(it); } }); });
+        var got = Math.min(total, start + data.posts.length);
+        $('progBar').style.width = (total ? Math.round(got / total * 100) : 100) + '%';
+        $('progText').textContent = 'Loaded ' + got.toLocaleString('en-US') + ' of ' + total.toLocaleString('en-US') + ' posts · ' + all.length.toLocaleString('en-US') + ' images so far';
+        if (data.posts.length && start + PER < total) return step(start + PER);
+      });
+    }
+    return step(0).then(function () {
+      $('loading').hidden = true;
+      setItems(all);
+      var stored = lsSet(K_CACHE, JSON.stringify({ at: new Date().toISOString(), total: total, items: all }));
+      if (!stored) { $('cacheText').textContent = 'Loaded ' + all.length + ' images. This browser can’t keep a copy, so they’ll load from Tumblr again next time.'; $('cacheNote').hidden = false; $('reload').hidden = true; }
+    }, function () {
+      $('loading').hidden = true;
+      if (all.length) setItems(all);
+      $('errNote').textContent = all.length
+        ? 'Tumblr stopped answering after ' + all.length + ' images. Reload the page to try again.'
+        : 'Couldn’t load Bráulio’s Tumblr. Check your connection and reload. If it keeps failing, Tumblr may be blocking this browser (try another one, or turn off content blockers for this page).';
+      $('errNote').hidden = false;
+    });
+  }
+
+  // ---------- grid ----------
+  var check = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  var mag = '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>';
+  function setItems(list) {
+    items = list.slice().sort(function (a, b) { return a.ts - b.ts || (a.id < b.id ? -1 : 1); });
+    byId = {}; tiles = {}; yearSecs = {}; selected.clear();
+    $('years').innerHTML = '';
+    var known = new Set(items.map(function (it) { return it.id; }));
+    items.forEach(function (it) { byId[it.id] = it; });
+    items.forEach(function (it) {
+      var y = it.date.slice(0, 4);
+      if (!yearSecs[y]) {
+        var sec = document.createElement('section'); sec.className = 'year';
+        sec.innerHTML = '<div class="yhead"><h2>' + y + '</h2><p></p></div><div class="grid"></div>';
+        yearSecs[y] = sec;
+      }
+      var t = document.createElement('div');
+      t.className = 'tile'; t.tabIndex = 0; t.setAttribute('role', 'checkbox'); t.dataset.id = it.id;
+      t.setAttribute('aria-label', 'Image from ' + label(it.date) + (it.reblog ? ', reblog' : ''));
+      t.innerHTML = '<div class="frame"><img loading="lazy" decoding="async" alt="" referrerpolicy="no-referrer"></div>' +
+        '<span class="mark" aria-hidden="true">' + check + '</span>' +
+        '<div class="cap"><time datetime="' + it.date + '">' + label(it.date) + '</time>' + (it.reblog ? '<span class="badge">Reblog</span>' : '') +
+        '<button class="zoom" type="button" aria-label="View full size" data-zoom="' + it.id + '">' + mag + '</button></div>';
+      var im = t.querySelector('img');
+      im.addEventListener('error', function () {
+        if (im.dataset.tried !== '1' && it.big !== it.thumb) { im.dataset.tried = '1'; im.src = it.big; return; }
+        t.firstChild.innerHTML = '<span class="ph">Image unavailable</span>';
+      });
+      im.src = it.thumb;
+      tiles[it.id] = t;
+      yearSecs[y].lastChild.appendChild(t);
+    });
+    $('kindSeg').hidden = !items.some(function (it) { return it.reblog; });
+    paint(true);
+  }
+  function visible(it) {
+    if (view.show === 'kept' ? deleted.has(it.id) : !deleted.has(it.id)) return false;
+    if (view.kind === 'own' && it.reblog) return false;
+    if (view.kind === 'reblog' && !it.reblog) return false;
+    return true;
+  }
+  function order() { return view.order === 'new' ? items.slice().reverse() : items; }
+  function shownList() { return order().filter(visible); }
+  function paint(reorder) {
+    var years = Object.keys(yearSecs).sort();
+    if (view.order === 'new') years.reverse();
+    if (reorder) {
+      years.forEach(function (y) {
+        var grid = yearSecs[y].lastChild;
+        order().forEach(function (it) { if (it.date.slice(0, 4) === y) grid.appendChild(tiles[it.id]); });
+        $('years').appendChild(yearSecs[y]);
+      });
+    }
+    var shown = 0, per = {};
+    items.forEach(function (it) {
+      var t = tiles[it.id], v = visible(it), on = selected.has(it.id);
+      t.hidden = !v; t.classList.toggle('on', on); t.classList.toggle('gone', deleted.has(it.id));
+      t.setAttribute('aria-checked', on ? 'true' : 'false');
+      if (v) { shown++; var y = it.date.slice(0, 4); per[y] = (per[y] || 0) + 1; }
+    });
+    years.forEach(function (y) { var n = per[y] || 0; yearSecs[y].hidden = !n; yearSecs[y].querySelector('p').textContent = n + (n === 1 ? ' image' : ' images'); });
+    var gone = items.filter(function (it) { return deleted.has(it.id); }).length;
+    $('nKept').textContent = '(' + (items.length - gone).toLocaleString('en-US') + ')';
+    $('nGone').textContent = '(' + gone.toLocaleString('en-US') + ')';
+    $('nReb').textContent = '(' + items.filter(function (it) { return it.reblog; }).length + ')';
+    $('count').textContent = items.length ? items.length.toLocaleString('en-US') + ' images' : '';
+    $('empty').hidden = !items.length || shown > 0;
+    $('empty').textContent = view.show === 'gone' ? 'Nothing deleted yet.' : 'No images to show here.';
+    $('showKept').setAttribute('aria-pressed', view.show === 'kept'); $('showGone').setAttribute('aria-pressed', view.show === 'gone');
+    Array.prototype.forEach.call(document.querySelectorAll('[data-kind]'), function (b) { b.setAttribute('aria-pressed', b.dataset.kind === view.kind); });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-order]'), function (b) { b.setAttribute('aria-pressed', b.dataset.order === view.order); });
+    paintBar();
+  }
+  function paintBar() {
+    var n = selected.size;
+    $('actionbar').hidden = n === 0;
+    $('nSel').textContent = n;
+    $('delSel').hidden = view.show !== 'kept';
+    $('resSel').hidden = view.show !== 'gone';
+  }
+
+  // ---------- view controls ----------
+  function setShow(s) { view.show = s; selected.clear(); paint(false); window.scrollTo(0, 0); }
+  $('showKept').onclick = function () { setShow('kept'); };
+  $('showGone').onclick = function () { setShow('gone'); };
+  $('controls').addEventListener('click', function (e) {
+    var k = e.target.closest('[data-kind]'); if (k) { view.kind = k.dataset.kind; paint(false); return; }
+    var o = e.target.closest('[data-order]'); if (o && o.dataset.order !== view.order) { view.order = o.dataset.order; paint(true); }
+  });
+
+  // ---------- selection ----------
+  var last = null;
+  $('years').addEventListener('click', function (e) {
+    var z = e.target.closest('[data-zoom]'); if (z) { e.stopPropagation(); openViewer(z.dataset.zoom); return; }
+    var t = e.target.closest('.tile'); if (!t) return;
+    var id = t.dataset.id;
+    if (e.shiftKey && last && byId[last]) {
+      var list = shownList(), a = list.indexOf(byId[last]), b = list.indexOf(byId[id]);
+      if (a > -1 && b > -1) { var on = selected.has(last); for (var k = Math.min(a, b); k <= Math.max(a, b); k++) { if (on) selected.add(list[k].id); else selected.delete(list[k].id); } last = id; paint(false); return; }
+    }
+    if (selected.has(id)) selected.delete(id); else selected.add(id);
+    last = id;
+    t.classList.toggle('on', selected.has(id)); t.setAttribute('aria-checked', selected.has(id) ? 'true' : 'false');
+    paintBar();
+  });
+  $('years').addEventListener('keydown', function (e) {
+    var t = e.target.closest('.tile'); if (t && e.target === t && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); t.click(); }
+  });
+  $('selAll').onclick = function () { shownList().forEach(function (it) { selected.add(it.id); }); paint(false); };
+  $('selNone').onclick = function () { selected.clear(); paint(false); };
+
+  // ---------- delete / restore with undo ----------
+  var undoState = null, undoReturn = null, toastTimer = null;
+  function change(ids, del, msg) {
+    var before = new Set(deleted);
+    ids.forEach(function (id) { if (del) deleted.add(id); else deleted.delete(id); });
+    saveDeleted();
+    undoState = before; undoReturn = null;
+    $('toastText').textContent = msg; $('toast').hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { $('toast').hidden = true; undoState = null; }, 6000);
+  }
+  $('undo').onclick = function () {
+    if (!undoState) return;
+    deleted = undoState; undoState = null; saveDeleted(); $('toast').hidden = true; paint(false);
+    if (!lb.hidden) showById(undoReturn || (cur && cur.id));
+  };
+  $('delSel').onclick = function () { var ids = Array.from(selected); selected.clear(); change(ids, true, 'Deleted ' + ids.length + (ids.length === 1 ? ' image' : ' images') + '.'); paint(false); };
+  $('resSel').onclick = function () { var ids = Array.from(selected); selected.clear(); change(ids, false, 'Restored ' + ids.length + (ids.length === 1 ? ' image' : ' images') + '.'); paint(false); };
+
+  // ---------- save / load the selection ----------
+  function today() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function selectionJson() {
+    var kept = items.filter(function (it) { return !deleted.has(it.id); }).map(function (it) {
+      return { id: it.id, date: it.date, img: it.big, thumb: it.thumb, w: it.w, h: it.h, post: it.post, reblog: it.reblog, from: it.from || undefined, caption: it.cap || undefined };
+    });
+    return JSON.stringify({ app: 'braulio-tumblr-curation', version: 1, blog: BLOG, savedAt: new Date().toISOString(),
+      totalImages: items.length, keptCount: kept.length, deleted: Array.from(deleted), kept: kept }, null, 1);
+  }
+  window.__selectionJson = selectionJson;
+  $('saveList').onclick = function () {
+    if (!items.length) return;
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([selectionJson()], { type: 'application/json' }));
+    a.download = 'braulio-tumblr-selection-' + today() + '.json';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    $('toastText').textContent = 'Saved ' + a.download + ' to your downloads.'; undoState = null; $('toast').hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { $('toast').hidden = true; }, 5000);
+  };
+  function applyList(text) {
+    var data; try { data = JSON.parse(text); } catch (e) { data = null; }
+    if (!data || data.app !== 'braulio-tumblr-curation' || !Array.isArray(data.deleted)) {
+      $('toastText').textContent = 'That file isn’t a selection saved from this page.'; undoState = null; $('toast').hidden = false; return false;
+    }
+    var before = new Set(deleted);
+    deleted = new Set(data.deleted.map(String)); saveDeleted(); undoState = before;
+    paint(false);
+    $('toastText').textContent = 'Loaded your list: ' + deleted.size + ' deleted.'; $('toast').hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { $('toast').hidden = true; undoState = null; }, 6000);
+    return true;
+  }
+  window.__applyList = applyList;
+  $('loadFile').addEventListener('change', function () {
+    var f = this.files[0]; this.value = ''; if (!f) return;
+    var r = new FileReader(); r.onload = function () { applyList(r.result); }; r.readAsText(f);
+  });
+
+  // ---------- viewer ----------
+  var cur = null, lb = $('lb'), img = $('lbImg'), stage = $('lbStage');
+  var touchFirst = window.matchMedia && matchMedia('(hover: none)').matches;
+  $('lbHint').textContent = touchFirst ? 'Pinch or double-tap to zoom' : 'D deletes · click or scroll to zoom';
+  // zoom state: the image is drawn at translate(tx, ty) scale(s) from its fitted position
+  var z = { s: 1, tx: 0, ty: 0 }, MAXZ = 6;
+  function apply(anim) {
+    img.classList.toggle('anim', !!anim);
+    img.style.transform = z.s === 1 ? '' : 'translate(' + z.tx + 'px,' + z.ty + 'px) scale(' + z.s + ')';
+    img.classList.toggle('zoomed', z.s > 1);
+  }
+  function resetZoom(anim) { z.s = 1; z.tx = 0; z.ty = 0; apply(anim); }
+  function base() { var r = img.getBoundingClientRect(); return { x: r.left - z.tx, y: r.top - z.ty, w: r.width / z.s, h: r.height / z.s }; }
+  function clampPan(b) {
+    var sr = stage.getBoundingClientRect(), sw = b.w * z.s, sh = b.h * z.s;
+    z.tx = sw <= sr.width ? sr.left + sr.width / 2 - b.x - sw / 2 : Math.min(sr.left - b.x, Math.max(sr.right - b.x - sw, z.tx));
+    z.ty = sh <= sr.height ? sr.top + sr.height / 2 - b.y - sh / 2 : Math.min(sr.top - b.y, Math.max(sr.bottom - b.y - sh, z.ty));
+  }
+  function zoomTo(ns, px, py, anim) {
+    ns = Math.min(MAXZ, Math.max(1, ns));
+    if (ns <= 1.01) { resetZoom(anim); return; }
+    var b = base(), u = (px - b.x - z.tx) / z.s, v = (py - b.y - z.ty) / z.s;
+    z.s = ns; z.tx = px - b.x - ns * u; z.ty = py - b.y - ns * v;
+    clampPan(b); apply(anim);
+  }
+  function pan(dx, dy) { if (z.s === 1) return; var b = base(); z.tx += dx; z.ty += dy; clampPan(b); apply(false); }
+  function toggleAt(x, y) { if (z.s > 1) resetZoom(true); else zoomTo(2.5, x, y, true); }
+  function center() { var r = img.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+
+
+  function showById(id) {
+    var it = byId[id]; if (!it) return;
+    cur = it; resetZoom(false);
+    img.hidden = false; $('lbPh').hidden = true;
+    img.onerror = function () { img.hidden = true; $('lbPh').hidden = false; };
+    img.src = it.big;
+    $('lbInfo').textContent = label(it.date) + (it.reblog ? ' · Reblog' + (it.from ? ' from ' + it.from : '') : '');
+    $('lbCapt').textContent = it.cap || '';
+    $('lbPost').href = it.post || ('https://' + BLOG + '.tumblr.com/');
+    var gone = deleted.has(it.id);
+    $('lbGone').hidden = !gone;
+    $('lbDel').textContent = gone ? 'Restore' : 'Delete';
+    $('lbDel').classList.toggle('restore', gone);
+    var list = shownList(), k = list.indexOf(it), n = list[(k + 1) % list.length];
+    if (n && n !== it) { var pre = new Image(); pre.referrerPolicy = 'no-referrer'; pre.src = n.big; }
+  }
+  function step(dir) {
+    var list = shownList(); if (!list.length) { close(); return; }
+    var k = list.indexOf(cur);
+    if (k < 0) { k = cur && cur._k != null ? cur._k : 0; if (dir > 0) k -= 1; }
+    showById(list[((k + dir) % list.length + list.length) % list.length].id);
+  }
+  function openViewer(id) { lb.hidden = false; document.body.style.overflow = 'hidden'; document.body.classList.add('lb-open'); showById(id); $('lbClose').focus(); }
+  function close() { lb.hidden = true; document.body.style.overflow = ''; document.body.classList.remove('lb-open'); resetZoom(false); img.removeAttribute('src'); paint(false); if (cur && tiles[cur.id] && !tiles[cur.id].hidden) tiles[cur.id].focus(); }
+  function toggleCurrent() {
+    if (!cur) return;
+    var it = cur, del = !deleted.has(it.id);
+    it._k = shownList().indexOf(it);
+    change([it.id], del, (del ? 'Deleted' : 'Restored') + ' the image from ' + label(it.date) + '.');
+    undoReturn = it.id;
+    selected.delete(it.id);
+    // the image leaves the current list: move on to the one that took its place
+    var list = shownList();
+    if (!list.length) { close(); return; }
+    showById(list[Math.min(it._k, list.length - 1)].id);
+  }
+  $('lbPrev').onclick = function () { step(-1); };
+  $('lbNext').onclick = function () { step(1); };
+  $('lbClose').onclick = close;
+  $('lbDel').onclick = toggleCurrent;
+  // gestures: one pointer pans (when zoomed) or swipes (when not); two pointers pinch; a tap or click toggles zoom
+  var ptrs = new Map(), g = null, lastTap = 0, lastX = 0, lastY = 0, swallowClick = false;
+  function pts() { return Array.from(ptrs.values()); }
+  function dist(p) { return Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y) || 1; }
+  stage.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('button, a') || img.hidden) return;
+    swallowClick = false;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ptrs.size === 1) g = { type: 'one', sx: e.clientX, sy: e.clientY, lx: e.clientX, ly: e.clientY, moved: false, onImg: e.target === img };
+    else if (ptrs.size === 2) { var p = pts(); g = { type: 'pinch', d: dist(p), s: z.s, mx: (p[0].x + p[1].x) / 2, my: (p[0].y + p[1].y) / 2 }; }
+    if (e.pointerType === 'mouse') e.preventDefault();
+  });
+  stage.addEventListener('pointermove', function (e) {
+    if (!ptrs.has(e.pointerId) || !g) return;
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (g.type === 'pinch' && ptrs.size === 2) {
+      var p = pts(), mx = (p[0].x + p[1].x) / 2, my = (p[0].y + p[1].y) / 2;
+      zoomTo(g.s * dist(p) / g.d, mx, my, false);
+      pan(mx - g.mx, my - g.my); g.mx = mx; g.my = my;
+    } else if (g.type === 'one') {
+      var dx = e.clientX - g.lx, dy = e.clientY - g.ly; g.lx = e.clientX; g.ly = e.clientY;
+      if (Math.abs(e.clientX - g.sx) + Math.abs(e.clientY - g.sy) > 8) g.moved = true;
+      if (g.moved) pan(dx, dy);
+    }
+  });
+  function up(e) {
+    if (!ptrs.has(e.pointerId)) return;
+    ptrs.delete(e.pointerId);
+    if (!g) return;
+    if (g.type === 'pinch') {
+      swallowClick = true;
+      if (ptrs.size === 1) { var p = pts()[0]; g = { type: 'one', sx: p.x, sy: p.y, lx: p.x, ly: p.y, moved: true, onImg: false }; }
+      else { g = null; if (z.s < 1.05) resetZoom(true); }
+      return;
+    }
+    var t = g; g = null;
+    if (e.type === 'pointercancel') return;
+    var dx = e.clientX - t.sx, dy = e.clientY - t.sy;
+    if (!t.moved) {
+      if (!t.onImg) return;               // a tap beside the image closes the viewer (click handler)
+      swallowClick = true;
+      if (e.pointerType === 'mouse') toggleAt(e.clientX, e.clientY);
+      else {
+        var now = Date.now();
+        if (now - lastTap < 320 && Math.abs(e.clientX - lastX) < 30 && Math.abs(e.clientY - lastY) < 30) { lastTap = 0; toggleAt(e.clientX, e.clientY); }
+        else { lastTap = now; lastX = e.clientX; lastY = e.clientY; }
+      }
+      return;
+    }
+    swallowClick = true;
+    if (z.s === 1 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
+  }
+  stage.addEventListener('pointerup', up);
+  stage.addEventListener('pointercancel', up);
+  stage.addEventListener('click', function (e) {
+    if (swallowClick) { swallowClick = false; return; }
+    if (e.target === stage) close();
+  });
+  stage.addEventListener('wheel', function (e) {
+    if (img.hidden) return;
+    e.preventDefault();
+    zoomTo(z.s * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.002)), e.clientX, e.clientY, false);
+  }, { passive: false });
+  lb.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+  window.addEventListener('resize', function () { if (!lb.hidden) resetZoom(false); });
+
+  document.addEventListener('keydown', function (e) {
+    if (lb.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); if (z.s > 1) resetZoom(true); else close(); }
+    else if (e.key === 'ArrowLeft') step(-1);
+    else if (e.key === 'ArrowRight') step(1);
+    else if (e.key === 'd' || e.key === 'D' || e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); toggleCurrent(); }
+    else if (e.key === '+' || e.key === '=') { var c = center(); zoomTo(z.s * 1.5, c.x, c.y, true); }
+    else if (e.key === '-') { var c2 = center(); zoomTo(z.s / 1.5, c2.x, c2.y, true); }
+    else if (e.key === '0') resetZoom(true);
+  });
+
+  // ---------- start: show the saved copy at once, or load from Tumblr ----------
+  $('reload').onclick = function () { fetchAll(); };
+  var cached = null;
+  try { cached = JSON.parse(lsGet(K_CACHE) || 'null'); } catch (e) {}
+  if (cached && Array.isArray(cached.items) && cached.items.length) {
+    setItems(cached.items);
+    var at = new Date(cached.at);
+    $('cacheText').textContent = 'Showing the ' + cached.items.length.toLocaleString('en-US') + ' images loaded on ' + at.getDate() + ' ' + MONTHS[at.getMonth()] + ' ' + at.getFullYear() + '.';
+    $('cacheNote').hidden = false;
+  } else fetchAll();
+})();
+</script>
+</body>
+</html>
